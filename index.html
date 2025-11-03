@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Gallery Showcase</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        // Immediately apply theme from localStorage to prevent FOUC (Flash of Unstyled Content)
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container">
+            <h1>My Showcase</h1>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark/light mode">
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.59a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 01-1.06 0l-1.59-1.591a.75.75 0 111.06-1.06l1.59 1.59a.75.75 0 010 1.061zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM5.106 17.894a.75.75 0 010-1.06l1.59-1.59a.75.75 0 111.06 1.06l-1.59 1.59a.75.75 0 01-1.06 0zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM6.106 5.106a.75.75 0 011.06 0l1.591 1.59a.75.75 0 01-1.06 1.06l-1.59-1.59a.75.75 0 010-1.06z"/></svg>
+                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 004.463-.949a.75.75 0 01.82.162a10.5 10.5 0 11-18.632-6.68a.75.75 0 01.818.162z" clip-rule="evenodd" /></svg>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Section 1: Welcome / About -->
+            <section class="card welcome-card">
+                <h2>Welcome to My Curated Collection</h2>
+                <p>This is a personal space where I've gathered interesting, funny, or impressive video clips from across the web. Below you'll find a searchable archive of Streamable videos. Feel free to explore!</p>
+            </section>
+
+            <!-- Section 2: The Video Gallery (Required) -->
+            <section class="gallery-section">
+                <div class="gallery-header">
+                    <h2>Streamable Video Archive</h2>
+                    <div class="search-container">
+                        <input type="text" id="search-input" placeholder="Search videos by title...">
+                    </div>
+                </div>
+                <div id="video-gallery" class="gallery">
+                    <!-- Video cards will be injected here by JavaScript -->
+                </div>
+                <p id="no-results" class="no-results" style="display: none;">No videos found matching your search.</p>
+            </section>
+
+            <!-- Section 3: Link to External Location (Required) -->
+            <section class="card link-card">
+                <a href="https://github.com/mygithubname" target="_blank" rel="noopener noreferrer" class="card-link-wrapper">
+                    <h3>Find Me on GitHub</h3>
+                    <p>Interested in the code behind this site or my other projects? Check out my GitHub profile to see more of my work and contributions.</p>
+                    <span class="link-arrow">→</span>
+                </a>
+            </section>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2024 <mygithubname>. All Rights Reserved. Built for GitHub Pages.</p>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

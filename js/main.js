@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- DATA SOURCE ---
-    // Extracted from the provided HTML file.
-    // Storing data separately like this makes the site easier to manage.
     const videos = [
         { id: 'za7zfh', title: 'Watch 103333950 CCA-3160250 kool-carz | Streamable' },
         { id: 'nukupo', title: 'Watch 1234 | Streamable' },
@@ -63,39 +61,62 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'fihsdb', title: 'Watch курьер | Streamable' }
     ];
 
+    // --- ELEMENT SELECTORS ---
     const gallery = document.getElementById('video-gallery');
     const searchInput = document.getElementById('search-input');
     const noResults = document.getElementById('no-results');
     const themeToggle = document.getElementById('theme-toggle');
+    const tabContainer = document.querySelector('.tabs');
+    const viewToggleContainer = document.getElementById('view-toggle');
+    const backToTopButton = document.getElementById('back-to-top');
 
-    // --- 1. POPULATE GALLERY ---
+    // --- 1. TAB FUNCTIONALITY ---
+    function initTabs() {
+        tabContainer.addEventListener('click', (e) => {
+            if (e.target.matches('.tab-button')) {
+                const targetTab = e.target.dataset.tab;
+
+                // Update button states
+                tabContainer.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+
+                // Update content visibility
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === targetTab) {
+                        content.classList.add('active');
+                    }
+                });
+            }
+        });
+    }
+
+    // --- 2. GALLERY POPULATION & LAZY LOAD ---
     function populateGallery() {
+        if (!gallery) return;
         const fragment = document.createDocumentFragment();
         videos.forEach((video, index) => {
             const card = document.createElement('div');
             card.className = 'video-card';
             card.setAttribute('data-title', video.title.toLowerCase());
-            // Stagger the animation for a nice effect
             card.style.animationDelay = `${index * 0.03}s`;
-
             card.innerHTML = `
-                <div class="video-embed-placeholder" data-src="https://streamable.com/e/${video.id}">
-                    <!-- iframe will be lazy-loaded here -->
-                </div>
+                <div class="video-embed-placeholder" data-src="https://streamable.com/e/${video.id}"></div>
                 <div class="video-label">
                     <a href="https://streamable.com/${video.id}" target="_blank" rel="noopener noreferrer" title="${video.title}">${video.title}</a>
-                </div>
-            `;
+                </div>`;
             fragment.appendChild(card);
         });
         gallery.appendChild(fragment);
         initLazyLoad();
     }
 
-    // --- 2. LAZY LOAD VIDEOS ---
+    // --- 3. SPEED / PERSISTENCE: LAZY LOADING ---
+    // This is the most effective client-side optimization for a static site with many iframes.
+    // It avoids loading all 98 videos at once, drastically improving initial page speed.
+    // The browser's native caching will handle persistence for recently viewed videos.
     function initLazyLoad() {
         const lazyVideos = document.querySelectorAll('.video-embed-placeholder[data-src]');
-        
         const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -104,24 +125,55 @@ document.addEventListener('DOMContentLoaded', () => {
                     iframe.src = placeholder.dataset.src;
                     iframe.setAttribute('frameborder', '0');
                     iframe.setAttribute('allowfullscreen', '');
-                    
                     placeholder.appendChild(iframe);
-                    
-                    // Clean up: stop observing this element
                     observer.unobserve(placeholder);
                 }
             });
-        }, { rootMargin: '100px' }); // Load videos 100px before they enter the viewport
-
+        }, { rootMargin: '100px' });
         lazyVideos.forEach(video => observer.observe(video));
     }
 
-    // --- 3. SEARCH/FILTER FUNCTIONALITY ---
+    // --- 4. GALLERY VIEW MODE TOGGLE ---
+    function initViewToggle() {
+        if (!viewToggleContainer) return;
+        viewToggleContainer.addEventListener('click', (e) => {
+            const button = e.target.closest('.view-button');
+            if (button) {
+                const view = button.dataset.view;
+                
+                // Update button active state
+                viewToggleContainer.querySelectorAll('.view-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Update gallery class
+                gallery.classList.remove('view-compact', 'view-large');
+                if (view === 'compact' || view === 'large') {
+                    gallery.classList.add(`view-${view}`);
+                }
+            }
+        });
+    }
+
+    // --- 5. BACK TO TOP BUTTON ---
+    function initBackToTop() {
+        if (!backToTopButton) return;
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // --- 6. SEARCH & THEME ---
     function handleSearch() {
         const searchTerm = searchInput.value.toLowerCase();
         const videoCards = gallery.querySelectorAll('.video-card');
         let visibleCount = 0;
-
         videoCards.forEach(card => {
             const title = card.dataset.title;
             if (title.includes(searchTerm)) {
@@ -131,11 +183,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.display = 'none';
             }
         });
-
         noResults.style.display = visibleCount === 0 ? 'block' : 'none';
     }
 
-    // --- 4. THEME TOGGLE ---
     function handleThemeToggle() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -144,7 +194,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- INITIALIZATION ---
+    initTabs();
     populateGallery();
-    searchInput.addEventListener('input', handleSearch);
-    themeToggle.addEventListener('click', handleThemeToggle);
+    initViewToggle();
+    initBackToTop();
+    if (searchInput) searchInput.addEventListener('input', handleSearch);
+    if (themeToggle) themeToggle.addEventListener('click', handleThemeToggle);
 });

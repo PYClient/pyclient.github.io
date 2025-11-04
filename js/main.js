@@ -71,22 +71,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToTopButton = document.getElementById('back-to-top');
     const videoCountElement = document.getElementById('video-count');
     const colorPicker = document.getElementById('color-picker');
+    const colorResetButton = document.getElementById('reset-color-btn');
 
     // --- 1. INITIAL PAGE SETUP ---
     function initPage() {
-        // Set total video count
-        if (videoCountElement) {
-            videoCountElement.textContent = `${videos.length} Videos`;
-        }
-        // Initialize all features
+        if (videoCountElement) videoCountElement.textContent = `${videos.length} Videos`;
         initTabs();
         populateGallery();
         initViewToggle();
         initBackToTop();
         initColorPicker();
-        // Add event listeners
         if (searchInput) searchInput.addEventListener('input', handleSearch);
         if (themeToggle) themeToggle.addEventListener('click', handleThemeToggle);
+        if (colorResetButton) colorResetButton.addEventListener('click', resetThemeColor);
     }
 
     // --- 2. THEME & COLOR CUSTOMIZATION ---
@@ -95,20 +92,36 @@ document.addEventListener('DOMContentLoaded', () => {
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
+        // Update color picker to reflect new theme's default if no custom color is set
+        if (!localStorage.getItem('themeColor')) {
+            colorPicker.value = getDefaultAccentColor();
+        }
     }
 
     function initColorPicker() {
         const savedColor = localStorage.getItem('themeColor');
-        const defaultColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
-
-        const currentColor = savedColor || defaultColor;
-        colorPicker.value = currentColor;
-
+        colorPicker.value = savedColor || getDefaultAccentColor();
         colorPicker.addEventListener('input', (e) => {
             const newColor = e.target.value;
             document.documentElement.style.setProperty('--accent-color', newColor);
             localStorage.setItem('themeColor', newColor);
         });
+    }
+
+    function resetThemeColor() {
+        localStorage.removeItem('themeColor');
+        document.documentElement.style.removeProperty('--accent-color');
+        colorPicker.value = getDefaultAccentColor();
+    }
+
+    function getDefaultAccentColor() {
+        // Temporarily remove the inline style to read the default from the stylesheet
+        const inlineStyle = document.documentElement.style.getPropertyValue('--accent-color');
+        document.documentElement.style.removeProperty('--accent-color');
+        const defaultColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+        // Re-apply the inline style if it existed
+        if (inlineStyle) document.documentElement.style.setProperty('--accent-color', inlineStyle);
+        return defaultColor;
     }
 
     // --- 3. TAB FUNCTIONALITY ---

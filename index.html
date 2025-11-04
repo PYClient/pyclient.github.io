@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Gallery Showcase</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
     <script>
-        // Immediately apply theme from localStorage to prevent FOUC (Flash of Unstyled Content)
         (function() {
             const theme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', theme);
@@ -27,34 +26,54 @@
 
     <main>
         <div class="container">
-            <!-- Section 1: Welcome / About -->
-            <section class="card welcome-card">
-                <h2>Welcome to My Curated Collection</h2>
-                <p>This is a personal space where I've gathered interesting, funny, or impressive video clips from across the web. Below you'll find a searchable archive of Streamable videos. Feel free to explore!</p>
-            </section>
+            <!-- Tab Navigation -->
+            <nav class="tabs">
+                <button class="tab-button active" data-tab="gallery-tab">Streamable Gallery</button>
+                <button class="tab-button" data-tab="projects-tab">Projects</button>
+                <button class="tab-button" data-tab="about-tab">About Me</button>
+            </nav>
 
-            <!-- Section 2: The Video Gallery (Required) -->
-            <section class="gallery-section">
-                <div class="gallery-header">
-                    <h2>Streamable Video Archive</h2>
-                    <div class="search-container">
-                        <input type="text" id="search-input" placeholder="Search videos by title...">
+            <!-- Tab Content -->
+            <div id="gallery-tab" class="tab-content active">
+                <section class="gallery-section">
+                    <div class="gallery-header">
+                        <h2>Streamable Video Archive</h2>
+                        <div class="gallery-controls">
+                            <input type="text" id="search-input" placeholder="Search videos by title...">
+                            <div class="view-toggle" id="view-toggle">
+                                <button class="view-button" data-view="compact" aria-label="Compact view">
+                                    <svg viewBox="0 0 16 16" fill="currentColor"><rect width="4" height="4" x="1" y="1"></rect><rect width="4" height="4" x="6" y="1"></rect><rect width="4" height="4" x="11" y="1"></rect><rect width="4" height="4" x="1" y="6"></rect><rect width="4" height="4" x="6" y="6"></rect><rect width="4" height="4" x="11" y="6"></rect><rect width="4" height="4" x="1" y="11"></rect><rect width="4" height="4" x="6" y="11"></rect><rect width="4" height="4" x="11" y="11"></rect></svg>
+                                </button>
+                                <button class="view-button active" data-view="normal" aria-label="Normal view">
+                                    <svg viewBox="0 0 16 16" fill="currentColor"><rect width="6" height="6" x="1" y="1"></rect><rect width="6" height="6" x="9" y="1"></rect><rect width="6" height="6" x="1" y="9"></rect><rect width="6" height="6" x="9" y="9"></rect></svg>
+                                </button>
+                                <button class="view-button" data-view="large" aria-label="Large view">
+                                    <svg viewBox="0 0 16 16" fill="currentColor"><rect width="14" height="14" x="1" y="1"></rect></svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div id="video-gallery" class="gallery">
-                    <!-- Video cards will be injected here by JavaScript -->
-                </div>
-                <p id="no-results" class="no-results" style="display: none;">No videos found matching your search.</p>
-            </section>
+                    <div id="video-gallery" class="gallery">
+                        <!-- Video cards will be injected here by JavaScript -->
+                    </div>
+                    <p id="no-results" class="no-results" style="display: none;">No videos found matching your search.</p>
+                </section>
+            </div>
 
-            <!-- Section 3: Link to External Location (Required) -->
-            <section class="card link-card">
-                <a href="https://github.com/mygithubname" target="_blank" rel="noopener noreferrer" class="card-link-wrapper">
-                    <h3>Find Me on GitHub</h3>
-                    <p>Interested in the code behind this site or my other projects? Check out my GitHub profile to see more of my work and contributions.</p>
-                    <span class="link-arrow">→</span>
-                </a>
-            </section>
+            <div id="projects-tab" class="tab-content">
+                <div class="placeholder-content">
+                    <h3>Work in Progress</h3>
+                    <p>This section is coming soon — nothing here yet!</p>
+                </div>
+            </div>
+
+            <div id="about-tab" class="tab-content">
+                <div class="placeholder-content">
+                    <h3>Work in Progress</h3>
+                    <p>This section is coming soon — nothing here yet!</p>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -64,6 +83,10 @@
         </div>
     </footer>
 
-    <script src="./js/main.js"></script>
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.47 4.72a.75.75 0 011.06 0l7.5 7.5a.75.75 0 11-1.06 1.06L12 6.31l-6.97 6.97a.75.75 0 01-1.06-1.06l7.5-7.5z"/></svg>
+    </button>
+
+    <script src="./assets/js/main.js"></script>
 </body>
 </html>

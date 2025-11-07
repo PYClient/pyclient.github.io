@@ -45,13 +45,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helve
 [data-theme='dark'] .sun-icon { display: block; }
 [data-theme='dark'] .moon-icon { display: none; }
 
-.color-controls-wrapper { display: flex; align-items: center; gap: 8px; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 20px; padding: 4px; }
-#color-picker { -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 28px; height: 28px; background-color: transparent; border: none; border-radius: 50%; cursor: pointer; padding: 0; }
-#color-picker::-webkit-color-swatch { border-radius: 50%; border: 2px solid var(--bg-secondary-color); }
-#color-picker::-moz-color-swatch { border-radius: 50%; border: 2px solid var(--bg-secondary-color); }
-.color-reset-button { background: none; border: none; cursor: pointer; padding: 5px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-secondary-color); transition: color 0.3s ease, background-color 0.3s ease; }
-.color-reset-button:hover { color: var(--accent-color); background-color: var(--bg-secondary-color); }
+.color-picker-container { position: relative; width: 36px; height: 36px; }
+#color-picker { -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; height: 100%; background-color: transparent; border: 1px solid var(--border-color); border-radius: 50%; cursor: pointer; padding: 0; }
+#color-picker::-webkit-color-swatch { border-radius: 50%; border: 3px solid var(--bg-secondary-color); }
+#color-picker::-moz-color-swatch { border-radius: 50%; border: 3px solid var(--bg-secondary-color); }
+
+.color-reset-button { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); border: none; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, transform 0.2s ease; }
 .color-reset-button svg { width: 20px; height: 20px; }
+.color-picker-container.show-reset:hover .color-reset-button { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
 
 /* --- Main Content & Tabs --- */
 main { padding: 40px 0; }

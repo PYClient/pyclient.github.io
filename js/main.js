@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'tapgah', title: 'Watch Zenless Zone Zero | Streamable', duration: 65, date: '2023-11-24T14:00:00Z' },
         { id: 'fihsdb', title: 'Watch курьер | Streamable', duration: 118, date: '2024-03-22T16:00:00Z' }
     ];
+
     const originalVideos = [...videos]; // A permanent copy for the "default" sort order
 
     // --- ELEMENT SELECTORS ---
@@ -122,12 +123,26 @@ document.addEventListener('DOMContentLoaded', () => {
         let videosToDisplay = [...originalVideos]; // Start with a fresh copy
 
         // 1. Apply Sorting
-        if (currentSort === 'title-asc') {
-            videosToDisplay.sort((a, b) => a.title.localeCompare(b.title));
-        } else if (currentSort === 'date-desc') {
-            videosToDisplay.sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (currentSort === 'duration-asc') {
-            videosToDisplay.sort((a, b) => a.duration - b.duration);
+        switch (currentSort) {
+            case 'title-asc':
+                videosToDisplay.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            case 'title-desc':
+                videosToDisplay.sort((a, b) => b.title.localeCompare(a.title));
+                break;
+            case 'date-desc':
+                videosToDisplay.sort((a, b) => new Date(b.date) - new Date(a.date));
+                break;
+            case 'date-asc':
+                videosToDisplay.sort((a, b) => new Date(a.date) - new Date(b.date));
+                break;
+            case 'duration-asc':
+                videosToDisplay.sort((a, b) => a.duration - b.duration);
+                break;
+            case 'duration-desc':
+                videosToDisplay.sort((a, b) => b.duration - a.duration);
+                break;
+            // 'default' case does nothing, preserving the original order.
         }
 
         // 2. Apply Search Filter

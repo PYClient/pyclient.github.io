@@ -1,8 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- DATA SOURCE ---
-    // This list is based on the user-provided videos.
-    // NOTE: Duration (in seconds) and Date (ISO 8601 format) have been SIMULATED
-    // for this demonstration, as this data is not available from the original source.
     const videos = [
         { id: 'z5hnfe', title: 'Watch unnamed | Streamable', duration: 143, date: '2023-08-11T05:21:14Z' },
         { id: 'o9m6lq', title: 'Watch Destiny 2 2025.01.26 - 14.45.58.28.DVR | Streamable', duration: 28, date: '2024-01-26T19:45:58Z' },
@@ -77,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'tapgah', title: 'Watch Zenless Zone Zero | Streamable', duration: 65, date: '2023-11-24T14:00:00Z' },
         { id: 'fihsdb', title: 'Watch курьер | Streamable', duration: 118, date: '2024-03-22T16:00:00Z' }
     ];
-
+    
     const originalVideos = [...videos]; // A permanent copy for the "default" sort order
 
     // --- ELEMENT SELECTORS ---
@@ -90,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewToggleContainer = document.getElementById('view-toggle');
     const backToTopButton = document.getElementById('back-to-top');
     const colorPicker = document.getElementById('color-picker');
+    const colorPickerContainer = document.getElementById('color-picker-container');
     const colorResetButton = document.getElementById('reset-color-btn');
 
     // --- STATE MANAGEMENT ---
@@ -103,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         initBackToTop();
         initColorPicker();
         
-        // Add event listeners
         if (themeToggle) themeToggle.addEventListener('click', handleThemeToggle);
         if (colorResetButton) colorResetButton.addEventListener('click', resetThemeColor);
         if (searchInput) searchInput.addEventListener('input', (e) => {
@@ -120,9 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CORE DISPLAY LOGIC ---
     function updateGalleryView() {
-        let videosToDisplay = [...originalVideos]; // Start with a fresh copy
+        let videosToDisplay = [...originalVideos];
 
-        // 1. Apply Sorting
         switch (currentSort) {
             case 'title-asc':
                 videosToDisplay.sort((a, b) => a.title.localeCompare(b.title));
@@ -142,10 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'duration-desc':
                 videosToDisplay.sort((a, b) => b.duration - a.duration);
                 break;
-            // 'default' case does nothing, preserving the original order.
         }
 
-        // 2. Apply Search Filter
         const lowerCaseSearchTerm = currentSearchTerm.toLowerCase();
         if (lowerCaseSearchTerm) {
             videosToDisplay = videosToDisplay.filter(video => 
@@ -153,15 +147,12 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         }
 
-        // 3. Render the final list of videos
         renderGallery(videosToDisplay);
-        
-        // 4. Update the results indicator
         updateResultsIndicator(videosToDisplay.length, originalVideos.length);
     }
 
     function renderGallery(videoArray) {
-        gallery.innerHTML = ''; // Clear the gallery
+        gallery.innerHTML = '';
         if (videoArray.length === 0) {
             resultsIndicator.textContent = `No videos found matching your criteria.`;
             return;
@@ -199,16 +190,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!sessionStorage.getItem('themeColor')) {
             colorPicker.value = getDefaultAccentColor();
         }
+        updateResetButtonVisibility();
     }
 
     function initColorPicker() {
         const savedColor = sessionStorage.getItem('themeColor');
         colorPicker.value = savedColor || getDefaultAccentColor();
+        updateResetButtonVisibility();
+        
         colorPicker.addEventListener('input', (e) => {
             const newColor = e.target.value;
             document.documentElement.style.setProperty('--accent-color', newColor);
             document.documentElement.style.setProperty('--accent-color-translucent', hexToRgba(newColor, 0.2));
             sessionStorage.setItem('themeColor', newColor);
+            updateResetButtonVisibility();
         });
     }
 
@@ -217,6 +212,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.style.removeProperty('--accent-color');
         document.documentElement.style.removeProperty('--accent-color-translucent');
         colorPicker.value = getDefaultAccentColor();
+        updateResetButtonVisibility();
+    }
+
+    function updateResetButtonVisibility() {
+        const isCustomColor = !!sessionStorage.getItem('themeColor');
+        colorPickerContainer.classList.toggle('show-reset', isCustomColor);
     }
 
     function getDefaultAccentColor() {

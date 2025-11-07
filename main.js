@@ -80,8 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'tapgah', title: 'Watch Zenless Zone Zero | Streamable', duration: 65, date: '2023-11-24T14:00:00Z' },
         { id: 'fihsdb', title: 'Watch курьер | Streamable', duration: 118, date: '2024-03-22T16:00:00Z' }
     ];
-    
-    const originalVideos = [...videos]; // A permanent copy for the "default" sort order
+    const originalVideos = [...videos];
 
     // --- ELEMENT SELECTORS ---
     const gallery = document.getElementById('video-gallery');
@@ -93,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewToggleContainer = document.getElementById('view-toggle');
     const backToTopButton = document.getElementById('back-to-top');
     const colorPicker = document.getElementById('color-picker');
-    const colorPickerContainer = document.getElementById('color-picker-container');
+    const colorControlsWrapper = document.getElementById('color-controls-wrapper');
     const colorResetButton = document.getElementById('reset-color-btn');
 
     // --- STATE MANAGEMENT ---
@@ -118,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateGalleryView();
         });
 
-        updateGalleryView(); // Initial render
+        updateGalleryView();
     }
 
     // --- CORE DISPLAY LOGIC ---
@@ -223,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateResetButtonVisibility() {
         const isCustomColor = !!sessionStorage.getItem('themeColor');
-        colorPickerContainer.classList.toggle('show-reset', isCustomColor);
+        colorControlsWrapper.classList.toggle('show-reset', isCustomColor);
     }
 
     function getDefaultAccentColor() {

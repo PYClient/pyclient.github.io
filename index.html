@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streamable Video Gallery</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <title>Video Gallery Showcase</title>
+    <link rel="stylesheet" href="./assets/css/style.css">
     <script>
-        // Immediately apply theme and custom color from localStorage to prevent FOUC
+        // Immediately apply theme and custom color from sessionStorage
         (function() {
-            const theme = localStorage.getItem('theme') || 'dark';
+            const theme = sessionStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', theme);
 
-            const themeColor = localStorage.getItem('themeColor');
+            const themeColor = sessionStorage.getItem('themeColor');
             if (themeColor) {
                 document.documentElement.style.setProperty('--accent-color', themeColor);
             }
@@ -28,12 +28,12 @@
                     <label for="color-picker" class="visually-hidden">Theme Color</label>
                     <input type="color" id="color-picker" value="#00aaff">
                     <button id="reset-color-btn" class="color-reset-button" aria-label="Reset to default color">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.323 4.677a.75.75 0 00-1.06-1.06l-2.5 2.5a.75.75 0 000 1.06l2.5 2.5a.75.75 0 101.06-1.06L13.31 6.5l2.013-2.013zm-6.5 0a.75.75 0 011.06-1.06l2.5 2.5a.75.75 0 010 1.06l-2.5 2.5a.75.75 0 11-1.06-1.06L10.81 6.5 8.823 4.677zM5 10a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5A.75.75 0 015 10z" clip-rule="evenodd" /></svg>
                     </button>
                 </div>
                 <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark/light mode">
                     <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.59a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 01-1.06 0l-1.59-1.591a.75.75 0 111.06-1.06l1.59 1.59a.75.75 0 010 1.061zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM5.106 17.894a.75.75 0 010-1.06l1.59-1.59a.75.75 0 111.06 1.06l-1.59 1.59a.75.75 0 01-1.06 0zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM6.106 5.106a.75.75 0 011.06 0l1.591 1.59a.75.75 0 01-1.06 1.06l-1.59-1.59a.75.75 0 010-1.06z"/></svg>
-                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 004.463-.949a.75.75 0 01.82.162a10.5 10.5 0 11-18.632-6.68a.75.75 0 01.818.162z" clip-rule="evenodd" /></svg>
+                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.75.75A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 004.463-.949a.75.75 0 01.82.162l.001.001a10.5 10.5 0 11-18.632-6.68.75.75 0 01.818.162z" clip-rule="evenodd" /></svg>
                 </button>
             </div>
         </div>
@@ -51,13 +51,18 @@
             <!-- Tab Content -->
             <div id="gallery-tab" class="tab-content active">
                 <section class="gallery-section">
-                    <div class="gallery-header">
-                        <div class="gallery-title">
-                            <h2>Streamable Video Archive</h2>
-                            <span id="video-count" class="video-count"></span>
+                    <h2>Streamable Video Archive</h2>
+                    <div class="gallery-toolbar">
+                        <div class="toolbar-left">
+                            <input type="text" id="search-input" placeholder="Search videos...">
                         </div>
-                        <div class="gallery-controls">
-                            <input type="text" id="search-input" placeholder="Search videos by title...">
+                        <div class="toolbar-right">
+                            <select id="sort-by" aria-label="Sort videos by">
+                                <option value="default">Sort by: Default</option>
+                                <option value="title-asc">Title (A-Z)</option>
+                                <option value="date-desc">Date (Newest)</option>
+                                <option value="duration-asc">Duration (Shortest)</option>
+                            </select>
                             <div class="view-toggle" id="view-toggle">
                                 <button class="view-button" data-view="compact" aria-label="Compact view"><svg viewBox="0 0 16 16" fill="currentColor"><rect width="4" height="4" x="1" y="1"></rect><rect width="4" height="4" x="6" y="1"></rect><rect width="4" height="4" x="11" y="1"></rect><rect width="4" height="4" x="1" y="6"></rect><rect width="4" height="4" x="6" y="6"></rect><rect width="4" height="4" x="11" y="6"></rect><rect width="4" height="4" x="1" y="11"></rect><rect width="4" height="4" x="6" y="11"></rect><rect width="4" height="4" x="11" y="11"></rect></svg></button>
                                 <button class="view-button active" data-view="normal" aria-label="Normal view"><svg viewBox="0 0 16 16" fill="currentColor"><rect width="6" height="6" x="1" y="1"></rect><rect width="6" height="6" x="9" y="1"></rect><rect width="6" height="6" x="1" y="9"></rect><rect width="6" height="6" x="9" y="9"></rect></svg></button>
@@ -65,10 +70,10 @@
                             </div>
                         </div>
                     </div>
+                    <p id="results-indicator" class="results-indicator"></p>
                     <div id="video-gallery" class="gallery">
                         <!-- Video cards will be injected here by JavaScript -->
                     </div>
-                    <p id="no-results" class="no-results" style="display: none;">No videos found matching your search.</p>
                 </section>
             </div>
 
@@ -84,12 +89,12 @@
 
     <footer class="site-footer">
         <div class="container">
-            <p>&copy; 2025 <pyclient>, All Rights Reserved.</p>
+            <p>&copy; 2024 <mygithubname>. All Rights Reserved. Built for GitHub Pages.</p>
         </div>
     </footer>
 
     <button id="back-to-top" class="back-to-top" aria-label="Back to top"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.47 4.72a.75.75 0 011.06 0l7.5 7.5a.75.75 0 11-1.06 1.06L12 6.31l-6.97 6.97a.75.75 0 01-1.06-1.06l7.5-7.5z"/></svg></button>
 
-    <script src="./js/main.js"></script>
+    <script src="./assets/js/main.js"></script>
 </body>
 </html>

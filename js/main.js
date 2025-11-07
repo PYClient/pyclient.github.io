@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const videos = [
         { id: 'z5hnfe', title: 'Watch unnamed | Streamable' },
         { id: 'za7zfh', title: 'Watch 103333950 CCA-3160250 kool-carz | Streamable' },
-        { id: 'di9r4t', title: 'Watch sskfu67_scale_2x_prob-3 | Streamable' }
+        { id: 'di9r4t', title: 'Watch sskfu67_scale_2x_prob-3 | Streamable' },
         { id: 'nukupo', title: 'Watch 1234 | Streamable' },
         { id: 'oomw7e', title: 'Watch Nice one. | Streamable' },
         { id: 'owwvpf', title: 'Watch 2025-05-15 04-38-53 | Streamable' },
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'uju5qz', title: 'Watch Basketball | Streamable' },
         { id: 'e3vdt0', title: 'Watch Fog 1 | Streamable' },
         { id: 'ks9rix', title: 'Watch Boothy cheated on his girlfriend | Streamable' },
-        { id: '8hzsh0', title: 'Watch Bubbling Bowl game | Streamable' },\ 
+        { id: '8hzsh0', title: 'Watch Bubbling Bowl game | Streamable' },
         { id: 'gnxefb', title: 'Watch sad | Streamable' },                 
         { id: '1b4ruo', title: 'Watch call com shark macedo | Streamable' },
         { id: '0op1wy', title: 'Watch CEN-24-161 Social Media Posts - December - Head Start on New Year’s Resolutions-6 | Streamable' },

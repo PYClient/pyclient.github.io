@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Gallery Showcase</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./style.css">
     <script>
         // Immediately apply theme and custom color from sessionStorage
         (function() {
@@ -28,7 +28,7 @@
                     <label for="color-picker" class="visually-hidden">Theme Color</label>
                     <input type="color" id="color-picker" value="#00aaff">
                     <button id="reset-color-btn" class="color-reset-button" aria-label="Reset to default color">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.323 4.677a.75.75 0 00-1.06-1.06l-2.5 2.5a.75.75 0 000 1.06l2.5 2.5a.75.75 0 101.06-1.06L13.31 6.5l2.013-2.013zm-6.5 0a.75.75 0 011.06-1.06l2.5 2.5a.75.75 0 010 1.06l-2.5 2.5a.75.75 0 11-1.06-1.06L10.81 6.5 8.823 4.677zM5 10a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5A.75.75 0 015 10z" clip-rule="evenodd" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201-4.42 5.5 5.5 0 017.777-7.777.75.75 0 011.06 1.06l-1.59 1.59a3.5 3.5 0 104.95 4.95l1.59-1.59a.75.75 0 011.06 1.06 5.5 5.5 0 01-4.42 9.201zM1.688 3.099a.75.75 0 011.06-1.06l14.153 14.153a.75.75 0 01-1.06 1.06L1.688 3.099z" clip-rule="evenodd" /></svg>
                     </button>
                 </div>
                 <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark/light mode">
@@ -57,12 +57,17 @@
                             <input type="text" id="search-input" placeholder="Search videos...">
                         </div>
                         <div class="toolbar-right">
-                            <select id="sort-by" aria-label="Sort videos by">
-                                <option value="default">Sort by: Default</option>
-                                <option value="title-asc">Title (A-Z)</option>
-                                <option value="date-desc">Date (Newest)</option>
-                                <option value="duration-asc">Duration (Shortest)</option>
-                            </select>
+                            <div class="sort-wrapper">
+                                <select id="sort-by" aria-label="Sort videos by">
+                                    <option value="default">Sort by: Default</option>
+                                    <option value="title-asc">Title (A-Z)</option>
+                                    <option value="title-desc">Title (Z-A)</option>
+                                    <option value="date-desc">Date (Newest First)</option>
+                                    <option value="date-asc">Date (Oldest First)</option>
+                                    <option value="duration-asc">Duration (Shortest)</option>
+                                    <option value="duration-desc">Duration (Longest)</option>
+                                </select>
+                            </div>
                             <div class="view-toggle" id="view-toggle">
                                 <button class="view-button" data-view="compact" aria-label="Compact view"><svg viewBox="0 0 16 16" fill="currentColor"><rect width="4" height="4" x="1" y="1"></rect><rect width="4" height="4" x="6" y="1"></rect><rect width="4" height="4" x="11" y="1"></rect><rect width="4" height="4" x="1" y="6"></rect><rect width="4" height="4" x="6" y="6"></rect><rect width="4" height="4" x="11" y="6"></rect><rect width="4" height="4" x="1" y="11"></rect><rect width="4" height="4" x="6" y="11"></rect><rect width="4" height="4" x="11" y="11"></rect></svg></button>
                                 <button class="view-button active" data-view="normal" aria-label="Normal view"><svg viewBox="0 0 16 16" fill="currentColor"><rect width="6" height="6" x="1" y="1"></rect><rect width="6" height="6" x="9" y="1"></rect><rect width="6" height="6" x="1" y="9"></rect><rect width="6" height="6" x="9" y="9"></rect></svg></button>
@@ -95,6 +100,6 @@
 
     <button id="back-to-top" class="back-to-top" aria-label="Back to top"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.47 4.72a.75.75 0 011.06 0l7.5 7.5a.75.75 0 11-1.06 1.06L12 6.31l-6.97 6.97a.75.75 0 01-1.06-1.06l7.5-7.5z"/></svg></button>
 
-    <script src="./js/main.js"></script>
+    <script src="./main.js"></script>
 </body>
 </html>

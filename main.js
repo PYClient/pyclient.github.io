@@ -94,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const colorPicker = document.getElementById('color-picker');
     const colorControlsWrapper = document.getElementById('color-controls-wrapper');
     const colorResetButton = document.getElementById('reset-color-btn');
+    const returnToGalleryBtn = document.getElementById('return-to-gallery-btn');
 
     // --- STATE MANAGEMENT ---
     let currentSort = 'default';
@@ -115,6 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (sortBySelect) sortBySelect.addEventListener('change', (e) => {
             currentSort = e.target.value;
             updateGalleryView();
+        });
+        if (returnToGalleryBtn) returnToGalleryBtn.addEventListener('click', () => {
+            // Find the gallery tab button and click it to switch tabs
+            const galleryTabButton = document.querySelector('.tab-button[data-tab="gallery-tab"]');
+            if (galleryTabButton) galleryTabButton.click();
         });
 
         updateGalleryView();

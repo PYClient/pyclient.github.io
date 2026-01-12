@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- DATA STORE ---
-    // These will be populated by fetching the videos.json file.
     let videos = [];
     let originalVideos = [];
 
@@ -24,7 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- ASYNCHRONOUS INITIALIZATION ---
     async function main() {
-        // Fetch video data first
+        // 1. Initialize UI immediately (Tabs, Theme, etc.)
+        // This ensures the site shell works even if data fails to load.
+        initPage();
+
+        // 2. Fetch video data
         try {
             const response = await fetch('./videos.json');
             if (!response.ok) {
@@ -32,15 +35,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const fetchedVideos = await response.json();
             videos = fetchedVideos;
-            originalVideos = [...fetchedVideos]; // Create a permanent copy for sorting
+            originalVideos = [...fetchedVideos]; 
+            
+            // 3. Render Gallery only after data is loaded
+            updateGalleryView();
         } catch (error) {
             console.error("Could not fetch video data:", error);
-            resultsIndicator.textContent = "Error: Could not load video gallery.";
-            return; // Stop execution if data fails to load
+            if (resultsIndicator) {
+                resultsIndicator.textContent = "Unable to load videos. If you are viewing this file locally, you must use a local server (like VS Code Live Server) due to browser security restrictions.";
+                resultsIndicator.style.color = "var(--accent-color)";
+            }
         }
-
-        // Once data is loaded, initialize the rest of the page
-        initPage();
     }
 
     // --- INITIALIZATION ---
@@ -64,12 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const galleryTabButton = document.querySelector('.tab-button[data-tab="gallery-tab"]');
             if (galleryTabButton) galleryTabButton.click();
         });
-
-        updateGalleryView(); // Initial render
     }
 
     // --- CORE DISPLAY LOGIC ---
     function updateGalleryView() {
+        if (!videos.length) return; // Guard clause if data isn't loaded
+
         let videosToDisplay = [...originalVideos];
 
         switch (currentSort) {
@@ -105,11 +110,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderGallery(videoArray) {
+        if (!gallery) return;
         gallery.innerHTML = '';
+        
         if (videoArray.length === 0) {
             resultsIndicator.textContent = `No videos found matching your criteria.`;
             return;
         }
+        
         const fragment = document.createDocumentFragment();
         videoArray.forEach((video, index) => {
             const card = document.createElement('div');
@@ -127,10 +135,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function updateResultsIndicator(filteredCount, totalCount) {
-        if (currentSearchTerm) {
-            resultsIndicator.textContent = `Showing ${filteredCount} of ${totalCount} videos.`;
-        } else {
-            resultsIndicator.textContent = `Showing all ${totalCount} videos.`;
+        if (resultsIndicator) {
+            if (currentSearchTerm) {
+                resultsIndicator.textContent = `Showing ${filteredCount} of ${totalCount} videos.`;
+            } else {
+                resultsIndicator.textContent = `Showing all ${totalCount} videos.`;
+            }
         }
     }
 
@@ -148,29 +158,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initColorPicker() {
         const savedColor = sessionStorage.getItem('themeColor');
-        colorPicker.value = savedColor || getDefaultAccentColor();
+        if (colorPicker) {
+            colorPicker.value = savedColor || getDefaultAccentColor();
+            colorPicker.addEventListener('input', (e) => {
+                const newColor = e.target.value;
+                document.documentElement.style.setProperty('--accent-color', newColor);
+                document.documentElement.style.setProperty('--accent-color-translucent', hexToRgba(newColor, 0.2));
+                sessionStorage.setItem('themeColor', newColor);
+                updateResetButtonVisibility();
+            });
+        }
         updateResetButtonVisibility();
-        
-        colorPicker.addEventListener('input', (e) => {
-            const newColor = e.target.value;
-            document.documentElement.style.setProperty('--accent-color', newColor);
-            document.documentElement.style.setProperty('--accent-color-translucent', hexToRgba(newColor, 0.2));
-            sessionStorage.setItem('themeColor', newColor);
-            updateResetButtonVisibility();
-        });
     }
 
     function resetThemeColor() {
         sessionStorage.removeItem('themeColor');
         document.documentElement.style.removeProperty('--accent-color');
         document.documentElement.style.removeProperty('--accent-color-translucent');
-        colorPicker.value = getDefaultAccentColor();
+        if (colorPicker) colorPicker.value = getDefaultAccentColor();
         updateResetButtonVisibility();
     }
 
     function updateResetButtonVisibility() {
         const isCustomColor = !!sessionStorage.getItem('themeColor');
-        colorControlsWrapper.classList.toggle('show-reset', isCustomColor);
+        if (colorControlsWrapper) {
+            colorControlsWrapper.classList.toggle('show-reset', isCustomColor);
+        }
     }
 
     function getDefaultAccentColor() {
@@ -208,6 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function initTabs() {
+        if (!tabContainer) return;
         tabContainer.addEventListener('click', (e) => {
             if (e.target.matches('.tab-button')) {
                 const targetTab = e.target.dataset.tab;

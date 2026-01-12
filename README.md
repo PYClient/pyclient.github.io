@@ -15,8 +15,6 @@ This project was built from the ground up to include a variety of modern web fea
 *   **Dynamic Video Gallery**: The gallery is populated entirely on the client-side, making the content easily manageable within the code.
 *   **Live Search**: An instant search bar allows users to filter the extensive video collection by title in real-time.
 *   **Multiple View Modes**: Users can instantly switch the gallery layout between **compact**, **normal**, and **large** views using a minimal toggle control.
-*   **Persistent Dark/Light Theme**: A theme toggle allows users to switch between dark and light modes, with their preference saved in `localStorage` for future visits.
-*   **Performance Optimized**: Utilizes the `IntersectionObserver` API to lazy-load video iframes, ensuring a fast initial page load and saving bandwidth.
 *   **Back-to-Top Button**: A convenient arrow appears on scroll, allowing users to return to the top of the page with a single click.
 *   **Fully Responsive Design**: The layout fluidly adapts to all screen sizes, providing a consistent experience on mobile, tablet, and desktop devices.
 
@@ -43,4 +41,4 @@ To explore the code or run this project on your local machine, follow these simp
     ```
 
 3.  **Open the site:**
-    Simply open the `index.html` file in your favorite web browser. No build steps or local server are required.
+    Simply open the `index.html` file in your web browser of choice. No additional steps are required.

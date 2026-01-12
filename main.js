@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const colorControlsWrapper = document.getElementById('color-controls-wrapper');
     const colorResetButton = document.getElementById('reset-color-btn');
     const returnToGalleryBtn = document.getElementById('return-to-gallery-btn');
+    const randomVideoTrigger = document.getElementById('random-video-trigger');
+    const toastContainer = document.getElementById('toast-container');
 
     // --- STATE MANAGEMENT ---
     let currentSort = 'default';
@@ -23,10 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- ASYNCHRONOUS INITIALIZATION ---
     async function main() {
-        // 1. Initialize UI immediately (Tabs, Theme, etc.)
         initPage();
+        renderSkeletons(); // Show skeletons while loading
 
-        // 2. Fetch video data
         try {
             const response = await fetch('./videos.json');
             if (!response.ok) {
@@ -36,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
             videos = fetchedVideos;
             originalVideos = [...fetchedVideos]; 
             
-            // 3. Render Gallery only after data is loaded
             updateGalleryView();
         } catch (error) {
             console.error("Could not fetch video data:", error);
@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultsIndicator.textContent = "Unable to load videos. If you are viewing this file locally, you must use a local server (like VS Code Live Server) due to browser security restrictions.";
                 resultsIndicator.style.color = "var(--accent-color)";
             }
+            gallery.innerHTML = ''; // Clear skeletons on error
         }
     }
 
@@ -68,6 +69,104 @@ document.addEventListener('DOMContentLoaded', () => {
             const galleryTabButton = document.querySelector('.tab-button[data-tab="gallery-tab"]');
             if (galleryTabButton) galleryTabButton.click();
         });
+        if (randomVideoTrigger) randomVideoTrigger.addEventListener('click', selectRandomVideo);
+
+        // Event delegation for Copy Link buttons
+        if (gallery) {
+            gallery.addEventListener('click', (e) => {
+                const btn = e.target.closest('.copy-link-btn');
+                if (btn) {
+                    const link = btn.dataset.link;
+                    navigator.clipboard.writeText(link).then(() => {
+                        showToast("Link copied to clipboard!");
+                    }).catch(err => {
+                        console.error('Failed to copy: ', err);
+                        showToast("Failed to copy link.");
+                    });
+                }
+            });
+        }
+    }
+
+    // --- SKELETON LOADING ---
+    function renderSkeletons() {
+        if (!gallery) return;
+        gallery.innerHTML = '';
+        const skeletonCount = 12; // Number of skeletons to show
+        const fragment = document.createDocumentFragment();
+        
+        for (let i = 0; i < skeletonCount; i++) {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'skeleton-card';
+            skeleton.innerHTML = `
+                <div class="skeleton-thumb"></div>
+                <div class="skeleton-text"></div>
+            `;
+            fragment.appendChild(skeleton);
+        }
+        gallery.appendChild(fragment);
+    }
+
+    // --- TOAST NOTIFICATIONS ---
+    function showToast(message) {
+        if (!toastContainer) return;
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `
+            <span class="toast-icon">✨</span>
+            <span>${message}</span>
+        `;
+        
+        toastContainer.appendChild(toast);
+        
+        // Trigger animation
+        requestAnimationFrame(() => {
+            toast.classList.add('show');
+        });
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                toast.remove();
+            }, 400); // Wait for transition to finish
+        }, 3000);
+    }
+
+    // --- RANDOM VIDEO LOGIC ---
+    function selectRandomVideo() {
+        if (videos.length === 0) return;
+
+        // If search is active, clear it so we can pick from all videos
+        if (currentSearchTerm !== '') {
+            searchInput.value = '';
+            currentSearchTerm = '';
+            updateGalleryView();
+        }
+
+        const randomIndex = Math.floor(Math.random() * videos.length);
+        const randomVideo = videos[randomIndex];
+        
+        // Find the card in the DOM
+        const cards = gallery.querySelectorAll('.video-card');
+        const targetCard = cards[randomIndex];
+
+        if (targetCard) {
+            targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Add a temporary highlight effect
+            targetCard.style.transition = 'box-shadow 0.5s ease, transform 0.5s ease';
+            targetCard.style.boxShadow = '0 0 30px 10px var(--accent-color)';
+            targetCard.style.transform = 'scale(1.05)';
+            
+            setTimeout(() => {
+                targetCard.style.boxShadow = '';
+                targetCard.style.transform = '';
+            }, 1500);
+
+            showToast(`Selected: ${randomVideo.title}`);
+        }
     }
 
     // --- CORE DISPLAY LOGIC ---
@@ -110,10 +209,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'video-card';
             card.style.animationDelay = `${index * 0.01}s`;
+            
+            const videoLink = `https://streamable.com/${video.id}`;
+            
             card.innerHTML = `
-                <div class="video-embed-placeholder" data-src="https://streamable.com/e/${video.id}"></div>
+                <div class="video-embed-placeholder" data-src="https://streamable.com/e/${video.id}">
+                    <button class="copy-link-btn" data-link="${videoLink}" title="Copy Link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                    </button>
+                </div>
                 <div class="video-label">
-                    <a href="https://streamable.com/${video.id}" target="_blank" rel="noopener noreferrer" title="${video.title}">${video.title}</a>
+                    <a href="${videoLink}" target="_blank" rel="noopener noreferrer" title="${video.title}">${video.title}</a>
                 </div>`;
             fragment.appendChild(card);
         });

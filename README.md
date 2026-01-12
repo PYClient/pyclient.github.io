@@ -1,11 +1,6 @@
 # Streamable Video Gallery Showcase
 
-Welcome to the Streamable Video Gallery Showcase, a modern, feature-rich static website designed to demonstrate key front-end development techniques using pure HTML, CSS, and JavaScript. This project serves as a practical example of building a responsive, high-performance, and user-friendly web application without relying on external frameworks.
-
-**[View the Website Here](https://pyclient.github.io/)**
-
-<!-- Optional: Add a screenshot of your finished site here -->
-<!-- ![Site Preview](link-to-your-screenshot.png) -->
+Welcome to my official GitHub website. Currently, it is the home of my Streamable Video Gallery Showcase, a modern, feature-rich static website designed to demonstrate key front-end development techniques using pure HTML, CSS, and JavaScript. This project serves as a practical example of building a responsive, high-performance, and user-friendly web application that relies on no external frameworks.
 
 ## ✨ Key Features
 
@@ -18,9 +13,9 @@ This project was built from the ground up to include a variety of modern web fea
 *   **Back-to-Top Button**: A convenient arrow appears on scroll, allowing users to return to the top of the page with a single click.
 *   **Fully Responsive Design**: The layout fluidly adapts to all screen sizes, providing a consistent experience on mobile, tablet, and desktop devices.
 
-## 🚀 Can i run it locally?
+## 🚀 Can I run it locally?
 
-Yes of course you can! In order to run this project on your local machine, follow these steps:
+Yes, of course you can! To run this project on your local machine, follow these steps:
 
 1.  **Clone the repository:**
     ```bash

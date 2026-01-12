@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ASYNCHRONOUS INITIALIZATION ---
     async function main() {
         // 1. Initialize UI immediately (Tabs, Theme, etc.)
-        // This ensures the site shell works even if data fails to load.
         initPage();
 
         // 2. Fetch video data
@@ -73,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CORE DISPLAY LOGIC ---
     function updateGalleryView() {
-        if (!videos.length) return; // Guard clause if data isn't loaded
+        if (!videos.length) return;
 
         let videosToDisplay = [...originalVideos];
 
@@ -83,18 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'title-desc':
                 videosToDisplay.sort((a, b) => b.title.localeCompare(a.title));
-                break;
-            case 'date-desc':
-                videosToDisplay.sort((a, b) => new Date(b.date) - new Date(a.date));
-                break;
-            case 'date-asc':
-                videosToDisplay.sort((a, b) => new Date(a.date) - new Date(b.date));
-                break;
-            case 'duration-asc':
-                videosToDisplay.sort((a, b) => a.duration - b.duration);
-                break;
-            case 'duration-desc':
-                videosToDisplay.sort((a, b) => b.duration - a.duration);
                 break;
         }
 

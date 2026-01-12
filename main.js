@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewToggleContainer = document.getElementById('view-toggle');
     const backToTopButton = document.getElementById('back-to-top');
     const colorPicker = document.getElementById('color-picker');
-    const colorControlsWrapper = document.getElementById('color-controls-wrapper');
+    const colorPickerContainer = document.getElementById('color-picker-container');
     const colorResetButton = document.getElementById('reset-color-btn');
     const returnToGalleryBtn = document.getElementById('return-to-gallery-btn');
 
@@ -23,10 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- ASYNCHRONOUS INITIALIZATION ---
     async function main() {
-        // 1. Initialize UI immediately (Tabs, Theme, etc.)
         initPage();
 
-        // 2. Fetch video data
         try {
             const response = await fetch('./videos.json');
             if (!response.ok) {
@@ -36,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
             videos = fetchedVideos;
             originalVideos = [...fetchedVideos]; 
             
-            // 3. Render Gallery only after data is loaded
             updateGalleryView();
         } catch (error) {
             console.error("Could not fetch video data:", error);
@@ -109,7 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
         videoArray.forEach((video, index) => {
             const card = document.createElement('div');
             card.className = 'video-card';
-            card.style.animationDelay = `${index * 0.02}s`;
+            // Performance: Reduced animation delay for snappier feel
+            card.style.animationDelay = `${index * 0.01}s`;
             card.innerHTML = `
                 <div class="video-embed-placeholder" data-src="https://streamable.com/e/${video.id}"></div>
                 <div class="video-label">
@@ -168,8 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateResetButtonVisibility() {
         const isCustomColor = !!sessionStorage.getItem('themeColor');
-        if (colorControlsWrapper) {
-            colorControlsWrapper.classList.toggle('show-reset', isCustomColor);
+        if (colorPickerContainer) {
+            colorPickerContainer.classList.toggle('show-reset', isCustomColor);
         }
     }
 
@@ -191,6 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- UI & UTILITIES ---
     function initLazyLoad() {
         const lazyVideos = document.querySelectorAll('.video-embed-placeholder[data-src]');
+        
+        // Performance: Increased rootMargin to 200px to load videos earlier
         const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -199,11 +199,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     iframe.src = placeholder.dataset.src;
                     iframe.setAttribute('frameborder', '0');
                     iframe.setAttribute('allowfullscreen', '');
+                    // Performance: Native lazy loading support
+                    iframe.setAttribute('loading', 'lazy'); 
                     placeholder.appendChild(iframe);
                     observer.unobserve(placeholder);
                 }
             });
-        }, { rootMargin: '100px' });
+        }, { rootMargin: '200px' });
+        
         lazyVideos.forEach(video => observer.observe(video));
     }
 

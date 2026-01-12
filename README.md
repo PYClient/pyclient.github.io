@@ -18,17 +18,9 @@ This project was built from the ground up to include a variety of modern web fea
 *   **Back-to-Top Button**: A convenient arrow appears on scroll, allowing users to return to the top of the page with a single click.
 *   **Fully Responsive Design**: The layout fluidly adapts to all screen sizes, providing a consistent experience on mobile, tablet, and desktop devices.
 
-## 💻 Technology Stack
+## 🚀 Can i run it locally?
 
-This project intentionally avoids heavy dependencies to showcase proficiency with core web technologies.
-
-*   **HTML5**: Semantic markup for a well-structured and accessible site.
-*   **CSS3**: Modern styling techniques, including CSS Variables for easy theming, Flexbox, and Grid for layout.
-*   **Vanilla JavaScript (ES6+)**: All dynamic functionality—including tab switching, search filtering, lazy-loading, and DOM manipulation—is handled with pure JavaScript.
-
-## 🚀 Running Locally
-
-To explore the code or run this project on your local machine, follow these simple steps:
+Yes of course you can! In order to run this project on your local machine, follow these steps:
 
 1.  **Clone the repository:**
     ```bash
@@ -42,3 +34,5 @@ To explore the code or run this project on your local machine, follow these simp
 
 3.  **Open the site:**
     Simply open the `index.html` file in your web browser of choice. No additional steps are required.
+
+    (You can also simply downlaod the zip file and open the index.html file that way, your choice :smile:)

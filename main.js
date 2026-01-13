@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ASYNCHRONOUS INITIALIZATION ---
     async function main() {
         initPage();
-        renderSkeletons(); // Show skeletons while loading
+        renderSkeletons(); 
 
         try {
             const response = await fetch('./videos.json');
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultsIndicator.textContent = "Unable to load videos. If you are viewing this file locally, you must use a local server (like VS Code Live Server) due to browser security restrictions.";
                 resultsIndicator.style.color = "var(--accent-color)";
             }
-            gallery.innerHTML = ''; // Clear skeletons on error
+            gallery.innerHTML = ''; 
         }
     }
 
@@ -71,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (randomVideoTrigger) randomVideoTrigger.addEventListener('click', selectRandomVideo);
 
-        // Event delegation for Copy Link buttons
         if (gallery) {
             gallery.addEventListener('click', (e) => {
                 const btn = e.target.closest('.copy-link-btn');
@@ -92,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderSkeletons() {
         if (!gallery) return;
         gallery.innerHTML = '';
-        const skeletonCount = 12; // Number of skeletons to show
+        const skeletonCount = 12; 
         const fragment = document.createDocumentFragment();
         
         for (let i = 0; i < skeletonCount; i++) {
@@ -107,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery.appendChild(fragment);
     }
 
-    // --- TOAST NOTIFICATIONS ---
+    // --- TOAST NOTIFICATIONS (UPDATED) ---
     function showToast(message) {
         if (!toastContainer) return;
         
@@ -120,25 +119,27 @@ document.addEventListener('DOMContentLoaded', () => {
         
         toastContainer.appendChild(toast);
         
-        // Trigger animation
+        // Trigger animation in
         requestAnimationFrame(() => {
             toast.classList.add('show');
         });
 
-        // Remove after 3 seconds
+        // Remove after 2500ms (Faster)
         setTimeout(() => {
+            // Trigger animation out (same as in, reversed)
             toast.classList.remove('show');
+            
+            // Wait for transition to finish before removing from DOM
             setTimeout(() => {
                 toast.remove();
-            }, 400); // Wait for transition to finish
-        }, 3000);
+            }, 500); // Matches CSS transition time
+        }, 2500);
     }
 
     // --- RANDOM VIDEO LOGIC ---
     function selectRandomVideo() {
         if (videos.length === 0) return;
 
-        // If search is active, clear it so we can pick from all videos
         if (currentSearchTerm !== '') {
             searchInput.value = '';
             currentSearchTerm = '';
@@ -148,14 +149,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const randomIndex = Math.floor(Math.random() * videos.length);
         const randomVideo = videos[randomIndex];
         
-        // Find the card in the DOM
         const cards = gallery.querySelectorAll('.video-card');
         const targetCard = cards[randomIndex];
 
         if (targetCard) {
             targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
             
-            // Add a temporary highlight effect
             targetCard.style.transition = 'box-shadow 0.5s ease, transform 0.5s ease';
             targetCard.style.boxShadow = '0 0 30px 10px var(--accent-color)';
             targetCard.style.transform = 'scale(1.05)';

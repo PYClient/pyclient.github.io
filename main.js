@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery.appendChild(fragment);
     }
 
-    // --- TOAST NOTIFICATIONS (UPDATED) ---
+    // --- TOAST NOTIFICATIONS ---
     function showToast(message) {
         if (!toastContainer) return;
         
@@ -119,20 +119,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         toastContainer.appendChild(toast);
         
-        // Trigger animation in
         requestAnimationFrame(() => {
             toast.classList.add('show');
         });
 
-        // Remove after 2500ms (Faster)
         setTimeout(() => {
-            // Trigger animation out (same as in, reversed)
             toast.classList.remove('show');
-            
-            // Wait for transition to finish before removing from DOM
             setTimeout(() => {
                 toast.remove();
-            }, 500); // Matches CSS transition time
+            }, 500); 
         }, 2500);
     }
 

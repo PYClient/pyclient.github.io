@@ -9,7 +9,6 @@
     --accent-color-translucent: rgba(52, 152, 219, 0.4);
     --shadow-color: rgba(0, 0, 0, 0.08);
     --placeholder-bg: #e1e8ed;
-    /* Updated for better glassmorphism */
     --toast-bg: rgba(255, 255, 255, 0.85); 
     --toast-border: rgba(255, 255, 255, 0.5);
 }
@@ -24,7 +23,6 @@
     --accent-color-translucent: rgba(0, 170, 255, 0.3);
     --shadow-color: rgba(0, 0, 0, 0.3);
     --placeholder-bg: #2a2a2a;
-    /* Updated for better glassmorphism */
     --toast-bg: rgba(20, 20, 20, 0.85);
     --toast-border: rgba(255, 255, 255, 0.1);
 }
@@ -50,16 +48,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helve
 [data-theme='dark'] .sun-icon { transform: translateY(0); opacity: 1; }
 [data-theme='dark'] .moon-icon { transform: translateY(150%); opacity: 0; }
 
-.color-group { display: flex; align-items: center; gap: 10px; }
-.color-picker-container { position: relative; width: 36px; height: 36px; border-radius: 50%; overflow: hidden; }
-#color-picker { -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; height: 100%; background-color: transparent; border: none; cursor: pointer; padding: 0; position: absolute; top: 0; left: 0; }
-#color-picker::-webkit-color-swatch { border: 2px solid var(--border-color); border-radius: 50%; }
-#color-picker::-moz-color-swatch { border: 2px solid var(--border-color); border-radius: 50%; }
+/* Color Controls Wrapper (The Pill) */
+.color-controls-wrapper { display: flex; align-items: center; gap: 8px; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 20px; padding: 4px; transition: background-color 0.3s ease, border-color 0.3s ease; }
 
-.color-reset-button { width: 36px; height: 36px; background-color: var(--placeholder-bg); border: none; border-radius: 50%; display: none; align-items: center; justify-content: center; color: var(--text-secondary-color); cursor: pointer; transition: color 0.3s ease, background-color 0.3s ease; }
-.color-group.show-reset .color-reset-button { display: flex; }
+.color-picker-container { position: relative; width: 28px; height: 28px; border-radius: 50%; overflow: hidden; }
+#color-picker { -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; height: 100%; background-color: transparent; border: none; cursor: pointer; padding: 0; position: absolute; top: 0; left: 0; }
+#color-picker::-webkit-color-swatch { border: 2px solid var(--bg-secondary-color); border-radius: 50%; }
+#color-picker::-moz-color-swatch { border: 2px solid var(--bg-secondary-color); border-radius: 50%; }
+
+/* Reset Button */
+.color-reset-button { width: 28px; height: 28px; background-color: var(--placeholder-bg); border: none; border-radius: 50%; display: none; /* Hidden by default */ align-items: center; justify-content: center; color: var(--text-secondary-color); cursor: pointer; transition: color 0.3s ease, background-color 0.3s ease; }
+.color-controls-wrapper.show-reset .color-reset-button { display: flex; /* Shown when custom color active */ }
 .color-reset-button:hover { color: var(--accent-color); background-color: var(--border-color); }
-.color-reset-button svg { width: 18px; height: 18px; }
+.color-reset-button svg { width: 16px; height: 16px; }
 
 /* --- Main Content & Tabs --- */
 main { padding: 40px 0; }
@@ -125,22 +126,17 @@ main { padding: 40px 0; }
 .skeleton-thumb::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; transform: translateX(-100%); background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.2) 20%, rgba(255, 255, 255, 0.5) 60%, rgba(255, 255, 255, 0)); animation: shimmer 2s infinite; }
 [data-theme='dark'] .skeleton-thumb::after { background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.05) 20%, rgba(255, 255, 255, 0.1) 60%, rgba(255, 255, 255, 0)); }
 
-/* --- OVERHAULED TOAST NOTIFICATIONS --- */
+/* --- Toast Notifications --- */
 .toast-container { position: fixed; bottom: 25px; right: 25px; z-index: 2000; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
 
 .toast { 
-    /* Glassmorphism & Shape */
     background-color: var(--toast-bg); 
     backdrop-filter: blur(12px); 
     -webkit-backdrop-filter: blur(12px); 
     border: 1px solid var(--toast-border);
-    border-radius: 50px; /* Pill shape */
+    border-radius: 50px; 
     padding: 12px 24px; 
-    
-    /* Glow & Shadow */
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 0 15px var(--accent-color-translucent);
-    
-    /* Content */
     color: var(--text-color); 
     font-weight: 600; 
     font-size: 0.95rem;
@@ -148,16 +144,11 @@ main { padding: 40px 0; }
     align-items: center; 
     gap: 12px; 
     pointer-events: auto; 
-    
-    /* Animation Initial State */
     opacity: 0;
     transform: translateX(120%) scale(0.9);
-    
-    /* Smooth Transition for In/Out */
     transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-/* Animation Active State */
 .toast.show { 
     opacity: 1; 
     transform: translateX(0) scale(1); 

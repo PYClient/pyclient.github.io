@@ -1,8 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- DATA STORE (EMBEDDED FOR SPEED) ---
-    // Storing data here avoids a network request, making the gallery load instantly.
+    // --- DATA STORE (EMBEDDED) ---
+    // This list is now hardcoded here. No external file needed.
     const videos = [
-[
   {"id":"b2g7bx","title":"Watch Innovación Digital - PCreativas | Streamable"},
   {"id":"zn9pod","title":"Watch pistol pog | Streamable"},
   {"id":"cjvo9r","title":"Watch LeiaKidnap | Streamable"},
@@ -119,25 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Render the gallery immediately
         updateGalleryView();
-    }
-
-    // --- SKELETON LOADING (Optional now, but good for transitions) ---
-    function renderSkeletons() {
-        if (!gallery) return;
-        gallery.innerHTML = '';
-        const skeletonCount = 12; 
-        const fragment = document.createDocumentFragment();
-        
-        for (let i = 0; i < skeletonCount; i++) {
-            const skeleton = document.createElement('div');
-            skeleton.className = 'skeleton-card';
-            skeleton.innerHTML = `
-                <div class="skeleton-thumb"></div>
-                <div class="skeleton-text"></div>
-            `;
-            fragment.appendChild(skeleton);
-        }
-        gallery.appendChild(fragment);
     }
 
     // --- TOAST NOTIFICATIONS ---

@@ -1,7 +1,63 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- DATA STORE ---
-    let videos = [];
-    let originalVideos = [];
+    // --- DATA STORE (EMBEDDED FOR SPEED) ---
+    // Storing data here avoids a network request, making the gallery load instantly.
+    const videos = [
+[
+  {"id":"b2g7bx","title":"Watch Innovación Digital - PCreativas | Streamable"},
+  {"id":"zn9pod","title":"Watch pistol pog | Streamable"},
+  {"id":"cjvo9r","title":"Watch LeiaKidnap | Streamable"},
+  {"id":"5qz8a4","title":"Watch gostovanjetvprva | Streamable"},
+  {"id":"8rc4zd","title":"Watch [클립]따린 - 서른 즈음에 (김광석) | Streamable"},
+  {"id":"g71oyh","title":"Watch video_2022-04-28_09-53-01 | Streamable"},
+  {"id":"ridiwi","title":"Watch ridiwi | Streamable"},
+  {"id":"noz480","title":"Watch yt1s.com - Onboard Carlos SAINZ with P1 in FP2 Silverstone  Formula 1 Resume Lap_1080p | Streamable"},
+  {"id":"u8t1ri","title":"Watch I'M IN THE CLUB | Streamable"},
+  {"id":"uju5qz","title":"Watch Basketball | Streamable"},
+  {"id":"za7zfh","title":"Watch 103333950 CCA-3160250 kool-carz | Streamable"},
+  {"id":"gm7tru","title":"Watch Le pourquoi !  | Streamable"},
+  {"id":"zc77w1","title":"Watch Fiksavimas | Streamable"},
+  {"id":"cgxl9r","title":"Watch [AND 1 - MG 3] Joshua Giuliani with another, and he'll let you know how many he has [16:43 1st] | MN Boys AA State Tourney Final 2022 | Streamable"},
+  {"id":"fihsdb","title":"Watch курьер | Streamable"},
+  {"id":"2vv1yn","title":"Watch divebombing maben | Streamable"},
+  {"id":"qxjrf1","title":"Watch We are invested now! WCOOP Side Event: $320 PKO  | Streamable"},
+  {"id":"0op1wy","title":"Watch CEN-24-161 Social Media Posts - December - Head Start on New Year’s Resolutions-6 | Streamable"},
+  {"id":"gx4zz8","title":"Watch niggas gay - KB | Streamable"},
+  {"id":"gvsikl","title":"Watch One fateful night | Streamable"},
+  {"id":"sujdl2","title":"Watch sujdl2 | Streamable"},
+  {"id":"5cwxek","title":"Watch OCULUS R6 | Streamable"},
+  {"id":"88nvfx","title":"Watch Adv. Thando Gumede ZA (Highlights) | Streamable"},
+  {"id":"01rxsg","title":"Watch Thank you, Blizzard QA Testers | Streamable"},
+  {"id":"5vz29y","title":"Watch requesting a supervisor WR speed run any % | Streamable"},
+  {"id":"pednlg","title":"Watch pednlg | Streamable"},
+  {"id":"01t66e","title":"Watch MICRO IS GARBAGE | Streamable"},
+  {"id":"lkqofz","title":"Watch unnamed | Streamable"},
+  {"id":"f62a6x","title":"Watch unnamed | Streamable"},
+  {"id":"s393xj","title":"Watch lanna | Streamable"},
+  {"id":"1g9v8t","title":"Watch op phi so nit hep | Streamable"},
+  {"id":"8hzsh0","title":"Watch Bubbling Bowl game | Streamable"},
+  {"id":"3tq56g","title":"Watch vinny | Streamable"},
+  {"id":"mvelg8","title":"Watch michael | Streamable"},
+  {"id":"oomw7e","title":"Watch Nice one. | Streamable"},
+  {"id":"e3vdt0","title":"Watch Fog 1 | Streamable"},
+  {"id":"gnxefb","title":"Watch sad | Streamable"},
+  {"id":"z5hnfe","title":"Watch unnamed | Streamable"},
+  {"id":"5cv4xg","title":"Watch 5cv4xg | Streamable"},
+  {"id":"4muuxd","title":"Watch video_2022-02-26_15-10-28 | Streamable"},
+  {"id":"86gj80","title":"Watch elh | Streamable"},
+  {"id":"8bjvfu","title":"Watch Cowboy Bebop Season 1 Episode 2 | Streamable"},
+  {"id":"gjkd8g","title":"Watch gjkd8g | Streamable"},
+  {"id":"gr7h96","title":"Watch TP social snippet TWITTER | Streamable"},
+  {"id":"t7znlk","title":"Watch tj | Streamable"},
+  {"id":"mcluvw","title":"Watch no hit | Streamable"},
+  {"id":"4z490v","title":"Watch Garry's Mod 2021-02-10 16-45-40 | Streamable"},
+  {"id":"aeqe6b","title":"Watch bandicam 2025-06-11 17-21-34-797 | Streamable"},
+  {"id":"h157q6","title":"Watch joshua edit | Streamable"},
+  {"id":"5iiae3","title":"Watch 1x1 2x2 owned highlights ft suck my dick | Streamable"},
+  {"id":"zgnk4x","title":"Watch INV clan in enemys list | Streamable"}
+    ];
+    
+    // Create a copy for sorting/filtering
+    let originalVideos = [...videos];
 
     // --- ELEMENT SELECTORS ---
     const gallery = document.getElementById('video-gallery');
@@ -22,31 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- STATE MANAGEMENT ---
     let currentSort = 'default';
     let currentSearchTerm = '';
-
-    // --- ASYNCHRONOUS INITIALIZATION ---
-    async function main() {
-        initPage();
-        renderSkeletons(); 
-
-        try {
-            const response = await fetch('./videos.json');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const fetchedVideos = await response.json();
-            videos = fetchedVideos;
-            originalVideos = [...fetchedVideos]; 
-            
-            updateGalleryView();
-        } catch (error) {
-            console.error("Could not fetch video data:", error);
-            if (resultsIndicator) {
-                resultsIndicator.textContent = "Unable to load videos. If you are viewing this file locally, you must use a local server (like VS Code Live Server) due to browser security restrictions.";
-                resultsIndicator.style.color = "var(--accent-color)";
-            }
-            gallery.innerHTML = ''; 
-        }
-    }
 
     // --- INITIALIZATION ---
     function initPage() {
@@ -85,9 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
+
+        // Render the gallery immediately
+        updateGalleryView();
     }
 
-    // --- SKELETON LOADING ---
+    // --- SKELETON LOADING (Optional now, but good for transitions) ---
     function renderSkeletons() {
         if (!gallery) return;
         gallery.innerHTML = '';
@@ -352,5 +386,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- START THE APP ---
-    main();
+    initPage();
 });

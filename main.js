@@ -9,10 +9,16 @@ const OWNER_CONFIG = {
 const AVATAR_OPTIONS = ['👑', '🧑‍💻', '🎧', '🧠', '🐱', '🐶', '🦊', '🐼', '🦁', '🦄', '🐙', '🪐', '🌈', '🔥', '⚡️', '🎮', '🎨', '📚', '🌊', '🌙'];
 const EMOJI_OPTIONS = ['👍', '❤️', '😂', '🔥', '🎉', '🤝', '✨', '👀', '😅', '🙌', '✅', '🚀', '💡', '🫶', '😎', '🥳', '😴', '🤖', '📌', '⚡️'];
 const COLOR_POOL = ['#5b8cff', '#22c55e', '#f97316', '#ec4899', '#14b8a6', '#a855f7', '#f59e0b', '#38bdf8'];
-const MAX_ECHO_LENGTH = 140;
+const MAX_BOT_ECHO_MESSAGE_LENGTH = 140;
 const SCROLL_THRESHOLD_PX = 120;
-const BOT_RESPONSE_BASE_MS = 1200;
-const BOT_RESPONSE_JITTER_MS = 1200;
+const BOT_TRIGGER_CONFIG = {
+    channelIds: new Set(['support']),
+    pattern: /help|support|issue/i
+};
+const BOT_RESPONSE_CONFIG = {
+    baseDelayMs: 1200,
+    jitterMs: 1200
+};
 
 const BOT_USERS = [
     {
@@ -286,7 +292,7 @@ function ensureMessages() {
 function applyTheme() {
     document.documentElement.setAttribute('data-theme', state.settings.theme);
     document.documentElement.style.setProperty('--accent', state.settings.accent);
-    document.body.dataset.density = state.settings.density;
+    document.body.dataset.chatDensity = state.settings.density;
 }
 
 function bindEvents() {
@@ -1333,18 +1339,27 @@ function updateTypingIndicator() {
     elements.typingIndicator.textContent = `${names} ${others.length === 1 ? 'is' : 'are'} typing...`;
 }
 
+function shouldBotRespond(channelId, text) {
+    return BOT_TRIGGER_CONFIG.channelIds.has(channelId) || BOT_TRIGGER_CONFIG.pattern.test(text);
+}
+
+function buildBotResponse(text) {
+    const snippet = text.slice(0, MAX_BOT_ECHO_MESSAGE_LENGTH);
+    return `Echoing: ${snippet}${text.length > MAX_BOT_ECHO_MESSAGE_LENGTH ? '...' : ''}`;
+}
+
 function maybeTriggerBotResponse(channelId, text) {
-    const triggerBot = channelId === 'support' || /help|support|issue/i.test(text);
+    const triggerBot = shouldBotRespond(channelId, text);
     if (!triggerBot) return;
     const bot = state.users.byId['bot-echo'];
     if (!bot) return;
     setTyping(bot.id, true);
-    const response = `Echoing: ${text.slice(0, MAX_ECHO_LENGTH)}${text.length > MAX_ECHO_LENGTH ? '...' : ''}`;
+    const response = buildBotResponse(text);
     setTimeout(() => {
         setTyping(bot.id, false);
         const message = createMessage(channelId, bot.id, response);
         addMessage(channelId, message);
-    }, BOT_RESPONSE_BASE_MS + getRandomIndex(BOT_RESPONSE_JITTER_MS + 1));
+    }, BOT_RESPONSE_CONFIG.baseDelayMs + getRandomIndex(BOT_RESPONSE_CONFIG.jitterMs + 1));
 }
 
 function isSlowModeLocked() {
@@ -1448,10 +1463,17 @@ function getInitials(name) {
 }
 
 function getRandomIndex(max) {
-    const buffer = new Uint32Array(1);
+    if (max <= 0) return 0;
     if (globalThis.crypto?.getRandomValues) {
-        globalThis.crypto.getRandomValues(buffer);
-        return buffer[0] % max;
+        const buffer = new Uint32Array(1);
+        const maxUint = 0x100000000;
+        const limit = Math.floor(maxUint / max) * max;
+        let value = 0;
+        do {
+            globalThis.crypto.getRandomValues(buffer);
+            value = buffer[0];
+        } while (value >= limit);
+        return value % max;
     }
     return Number(BigInt(Date.now()) % BigInt(max));
 }
@@ -1481,5 +1503,14 @@ async function hashPasscode(value) {
         const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
         return Array.from(new Uint8Array(buffer)).map((byte) => byte.toString(16).padStart(2, '0')).join('');
     }
-    return btoa(value);
+    return fallbackHash(value);
+}
+
+function fallbackHash(value) {
+    let hash = 2166136261;
+    for (let i = 0; i < value.length; i += 1) {
+        hash ^= value.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(16).padStart(8, '0');
 }

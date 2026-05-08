@@ -786,11 +786,11 @@ body:not([data-role='owner']) .owner-only {
     display: none;
 }
 
-body[data-density='compact'] .message-content {
+body[data-chat-density='compact'] .message-content {
     padding: 8px 10px;
 }
 
-body[data-density='compact'] .message-list {
+body[data-chat-density='compact'] .message-list {
     gap: 10px;
 }
 

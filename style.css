@@ -292,7 +292,6 @@ textarea {
 }
 
 .message-content {
-    flex: 1;
     background: var(--bg-alt);
     border: 1px solid var(--border);
     padding: 12px 14px;
@@ -300,6 +299,8 @@ textarea {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: fit-content;
+    max-width: min(100%, 760px);
 }
 
 .message-meta {
@@ -333,11 +334,6 @@ textarea {
     color: #f97316;
 }
 
-.badge.bot {
-    background: rgba(91, 140, 255, 0.2);
-    color: var(--accent);
-}
-
 .message-body {
     white-space: pre-wrap;
     line-height: 1.5;
@@ -352,25 +348,6 @@ textarea {
 
 .message:hover .message-actions {
     opacity: 1;
-}
-
-.reaction-bar {
-    display: flex;
-    gap: 6px;
-}
-
-.reaction-button,
-.reaction-chip {
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--bg-elevated);
-    padding: 4px 8px;
-    font-size: 0.85rem;
-}
-
-.reaction-chip.active {
-    border-color: var(--accent);
-    color: var(--accent);
 }
 
 .typing-indicator {
@@ -481,6 +458,10 @@ textarea {
     border-radius: 12px;
     background: var(--bg-elevated);
     border: 1px solid var(--border);
+}
+
+.member-card[data-user-id] {
+    cursor: pointer;
 }
 
 .member-meta {

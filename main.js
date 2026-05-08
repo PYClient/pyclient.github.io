@@ -9,6 +9,10 @@ const OWNER_CONFIG = {
 const AVATAR_OPTIONS = ['👑', '🧑‍💻', '🎧', '🧠', '🐱', '🐶', '🦊', '🐼', '🦁', '🦄', '🐙', '🪐', '🌈', '🔥', '⚡️', '🎮', '🎨', '📚', '🌊', '🌙'];
 const EMOJI_OPTIONS = ['👍', '❤️', '😂', '🔥', '🎉', '🤝', '✨', '👀', '😅', '🙌', '✅', '🚀', '💡', '🫶', '😎', '🥳', '😴', '🤖', '📌', '⚡️'];
 const COLOR_POOL = ['#5b8cff', '#22c55e', '#f97316', '#ec4899', '#14b8a6', '#a855f7', '#f59e0b', '#38bdf8'];
+const MAX_ECHO_LENGTH = 140;
+const SCROLL_THRESHOLD_PX = 120;
+const BOT_RESPONSE_BASE_MS = 1200;
+const BOT_RESPONSE_JITTER_MS = 1200;
 
 const BOT_USERS = [
     {
@@ -1335,12 +1339,12 @@ function maybeTriggerBotResponse(channelId, text) {
     const bot = state.users.byId['bot-echo'];
     if (!bot) return;
     setTyping(bot.id, true);
-    const response = `Echoing: ${text.slice(0, 140)}${text.length > 140 ? '...' : ''}`;
+    const response = `Echoing: ${text.slice(0, MAX_ECHO_LENGTH)}${text.length > MAX_ECHO_LENGTH ? '...' : ''}`;
     setTimeout(() => {
         setTyping(bot.id, false);
         const message = createMessage(channelId, bot.id, response);
         addMessage(channelId, message);
-    }, 1200 + Math.random() * 1200);
+    }, BOT_RESPONSE_BASE_MS + getRandomIndex(BOT_RESPONSE_JITTER_MS + 1));
 }
 
 function isSlowModeLocked() {
@@ -1443,17 +1447,29 @@ function getInitials(name) {
         .toUpperCase();
 }
 
+function getRandomIndex(max) {
+    const buffer = new Uint32Array(1);
+    if (globalThis.crypto?.getRandomValues) {
+        globalThis.crypto.getRandomValues(buffer);
+        return buffer[0] % max;
+    }
+    return Number(BigInt(Date.now()) % BigInt(max));
+}
+
 function createId(prefix) {
-    return `${prefix}-${Math.random().toString(36).slice(2, 9)}-${Date.now().toString(36)}`;
+    if (globalThis.crypto?.randomUUID) {
+        return `${prefix}-${globalThis.crypto.randomUUID()}`;
+    }
+    return `${prefix}-${Date.now().toString(36)}-${getRandomIndex(1_000_000_000).toString(36)}`;
 }
 
 function pickColor() {
-    return COLOR_POOL[Math.floor(Math.random() * COLOR_POOL.length)];
+    return COLOR_POOL[getRandomIndex(COLOR_POOL.length)];
 }
 
 function isNearBottom() {
     const { scrollTop, scrollHeight, clientHeight } = elements.messageList;
-    return scrollHeight - scrollTop - clientHeight < 120;
+    return scrollHeight - scrollTop - clientHeight < SCROLL_THRESHOLD_PX;
 }
 
 function scrollToBottom() {

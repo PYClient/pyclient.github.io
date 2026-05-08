@@ -292,7 +292,8 @@ textarea {
 }
 
 .message-content {
-    flex: 1;
+    flex: none;
+    max-width: 85%;
     background: var(--bg-alt);
     border: 1px solid var(--border);
     padding: 12px 14px;
@@ -333,11 +334,6 @@ textarea {
     color: #f97316;
 }
 
-.badge.bot {
-    background: rgba(91, 140, 255, 0.2);
-    color: var(--accent);
-}
-
 .message-body {
     white-space: pre-wrap;
     line-height: 1.5;
@@ -352,25 +348,6 @@ textarea {
 
 .message:hover .message-actions {
     opacity: 1;
-}
-
-.reaction-bar {
-    display: flex;
-    gap: 6px;
-}
-
-.reaction-button,
-.reaction-chip {
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--bg-elevated);
-    padding: 4px 8px;
-    font-size: 0.85rem;
-}
-
-.reaction-chip.active {
-    border-color: var(--accent);
-    color: var(--accent);
 }
 
 .typing-indicator {
@@ -417,33 +394,6 @@ textarea {
     padding: 0 24px 16px;
     color: var(--muted);
     font-size: 0.8rem;
-}
-
-.emoji-picker {
-    position: absolute;
-    bottom: 58px;
-    left: 0;
-    background: var(--bg-alt);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 12px;
-    box-shadow: var(--shadow);
-    display: none;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 6px;
-    width: 280px;
-}
-
-.emoji-picker.active {
-    display: grid;
-}
-
-.emoji-option {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 6px;
-    font-size: 1rem;
 }
 
 .detail-panel {

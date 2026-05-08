@@ -1,45 +1,14 @@
-const STORAGE_KEY = 'pyclient.chat.state.v1';
+const STORAGE_KEY = 'messaging.app.state.v1';
 const OWNER_CONFIG = {
-    username: 'pyclient',
-    accessCode: 'owner-setup',
-    displayName: 'PYClient',
+    username: 'admin',
+    accessCode: 'pyclienthuzz1!',
+    displayName: 'Admin',
     avatar: '👑'
 };
 
-const AVATAR_OPTIONS = ['👑', '🧑‍💻', '🎧', '🧠', '🐱', '🐶', '🦊', '🐼', '🦁', '🦄', '🐙', '🪐', '🌈', '🔥', '⚡️', '🎮', '🎨', '📚', '🌊', '🌙'];
-const EMOJI_OPTIONS = ['👍', '❤️', '😂', '🔥', '🎉', '🤝', '✨', '👀', '😅', '🙌', '✅', '🚀', '💡', '🫶', '😎', '🥳', '😴', '🤖', '📌', '⚡️'];
+const AVATAR_OPTIONS = ['👑', '🧑‍💻', '🎧', '🧠', '🐱', '🐶', '🦊', '🐼', '🦁', '🦄', '🐙', '🪐', '🌈', '🔥', '⚡️', '🎮', '🎨', '📚', '🌊', '🌙', '🍎', '🍔', '🍕', '🚗', '🚀', '💎', '⚽', '🎸', '🏝️', '🗽', '🧸', '🧿', '🍀', '🍄', '🌍', '🌞', '⛄', '🎈', '🎉', '🏆', '👍', '❤️', '😂', '🤝', '✨', '👀', '😅', '🙌', '✅', '💡', '🫶', '😎', '🥳', '😴', '📌'];
 const COLOR_POOL = ['#5b8cff', '#22c55e', '#f97316', '#ec4899', '#14b8a6', '#a855f7', '#f59e0b', '#38bdf8'];
-const MAX_BOT_ECHO_MESSAGE_LENGTH = 140;
 const SCROLL_THRESHOLD_PX = 120;
-const BOT_TRIGGER_CONFIG = {
-    channelIds: new Set(['support']),
-    pattern: /help|support|issue/i
-};
-const BOT_RESPONSE_CONFIG = {
-    baseDelayMs: 1200,
-    jitterMs: 1200
-};
-
-const BOT_USERS = [
-    {
-        id: 'bot-echo',
-        username: 'echobot',
-        displayName: 'Echo Bot',
-        avatar: '🤖',
-        role: 'bot',
-        status: 'online',
-        color: '#38bdf8'
-    },
-    {
-        id: 'bot-guide',
-        username: 'guidebot',
-        displayName: 'Guide Bot',
-        avatar: '🧭',
-        role: 'bot',
-        status: 'online',
-        color: '#a78bfa'
-    }
-];
 
 const elements = {
     app: document.getElementById('app'),
@@ -105,8 +74,6 @@ const elements = {
     messageSearchInput: document.getElementById('message-search-input'),
     clearSearch: document.getElementById('clear-search'),
     pinnedToggle: document.getElementById('pinned-toggle'),
-    emojiToggle: document.getElementById('emoji-toggle'),
-    emojiPicker: document.getElementById('emoji-picker'),
     attachmentToggle: document.getElementById('attachment-toggle'),
     toastContainer: document.getElementById('toast-container')
 };
@@ -128,7 +95,6 @@ function init() {
     ensureMessages();
     applyTheme();
     initAvatarGrids();
-    initEmojiPicker();
     bindEvents();
     refreshApp();
     if (!state.session.currentUserId || isBanned(state.session.currentUserId)) {
@@ -141,7 +107,6 @@ function init() {
 function createDefaultState() {
     const now = new Date().toISOString();
     const users = { byId: {}, allIds: [] };
-    BOT_USERS.forEach((user) => addUserToCollection(users, user));
 
     const channels = {
         byId: {
@@ -151,59 +116,13 @@ function createDefaultState() {
                 description: 'Everyday updates, quick check-ins, and team chat.',
                 type: 'channel',
                 ownerOnly: false
-            },
-            announcements: {
-                id: 'announcements',
-                name: 'Announcements',
-                description: 'Owner-only updates for the community.',
-                type: 'channel',
-                ownerOnly: true
-            },
-            support: {
-                id: 'support',
-                name: 'Support',
-                description: 'Questions, feedback, and troubleshooting.',
-                type: 'channel',
-                ownerOnly: false
             }
         },
-        allIds: ['general', 'announcements', 'support']
+        allIds: ['general']
     };
 
     const messages = {
-        general: [
-            {
-                id: createId('msg'),
-                authorId: 'bot-guide',
-                content: 'Welcome to PyClient Chat! Your messages auto-save locally and you can customize everything in Settings.',
-                createdAt: now,
-                reactions: { '🎉': ['bot-guide'] },
-                pinned: true,
-                system: false
-            }
-        ],
-        announcements: [
-            {
-                id: createId('msg'),
-                authorId: 'bot-guide',
-                content: 'Announcements are read-only unless you sign in as the owner.',
-                createdAt: now,
-                reactions: {},
-                pinned: false,
-                system: true
-            }
-        ],
-        support: [
-            {
-                id: createId('msg'),
-                authorId: 'bot-echo',
-                content: 'Need help? Ask away and I will echo your question for now.',
-                createdAt: now,
-                reactions: {},
-                pinned: false,
-                system: false
-            }
-        ]
+        general: []
     };
 
     return {
@@ -226,7 +145,7 @@ function createDefaultState() {
         activity: [
             {
                 id: createId('activity'),
-                text: 'Workspace initialized.',
+                text: 'App initialized.',
                 createdAt: now
             }
         ],
@@ -274,13 +193,6 @@ function mergeCollections(defaultCollection, storedCollection = {}) {
     return { byId, allIds };
 }
 
-function addUserToCollection(collection, user) {
-    collection.byId[user.id] = user;
-    if (!collection.allIds.includes(user.id)) {
-        collection.allIds.push(user.id);
-    }
-}
-
 function ensureMessages() {
     state.channels.allIds.forEach((channelId) => {
         if (!state.messages[channelId]) {
@@ -304,6 +216,8 @@ function bindEvents() {
     elements.messageInput.addEventListener('input', handleTypingInput);
     elements.messageInput.addEventListener('keydown', handleComposerKeydown);
     elements.messageList.addEventListener('click', handleMessageAction);
+    elements.messageList.addEventListener('click', handleUserClick);
+    elements.memberList.addEventListener('click', handleUserClick);
     elements.settingsToggle.addEventListener('click', openSettings);
     elements.closeSettings.addEventListener('click', () => closeModal(elements.settingsModal));
     elements.cancelSettings.addEventListener('click', () => closeModal(elements.settingsModal));
@@ -312,8 +226,6 @@ function bindEvents() {
     elements.messageSearchInput.addEventListener('input', handleSearch);
     elements.clearSearch.addEventListener('click', clearSearch);
     elements.pinnedToggle.addEventListener('click', toggleDetailPanel);
-    elements.emojiToggle.addEventListener('click', toggleEmojiPicker);
-    elements.emojiPicker.addEventListener('click', handleEmojiClick);
     elements.attachmentToggle.addEventListener('click', () => showToast('File attachments are coming soon.'));
     elements.moderationToggle.addEventListener('click', openModeration);
     elements.closeModeration.addEventListener('click', () => closeModal(elements.moderationModal));
@@ -326,7 +238,6 @@ function bindEvents() {
     elements.closeChannelModal.addEventListener('click', () => closeModal(elements.channelModal));
     elements.cancelChannel.addEventListener('click', () => closeModal(elements.channelModal));
     elements.channelForm.addEventListener('submit', handleCreateChannel);
-    document.addEventListener('click', handleGlobalClick);
 }
 
 function initAvatarGrids() {
@@ -334,18 +245,6 @@ function initAvatarGrids() {
     renderAvatarGrid(elements.profileAvatarGrid, profileAvatarChoice);
     elements.loginAvatarGrid.addEventListener('click', (event) => handleAvatarSelect(event, 'login'));
     elements.profileAvatarGrid.addEventListener('click', (event) => handleAvatarSelect(event, 'profile'));
-}
-
-function initEmojiPicker() {
-    elements.emojiPicker.innerHTML = '';
-    EMOJI_OPTIONS.forEach((emoji) => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'emoji-option';
-        button.dataset.emoji = emoji;
-        button.textContent = emoji;
-        elements.emojiPicker.appendChild(button);
-    });
 }
 
 function renderAvatarGrid(container, selectedAvatar) {
@@ -413,7 +312,6 @@ async function handleLogin(event) {
         loginAvatarChoice = user.avatar || loginAvatarChoice;
         setCurrentUser(user.id);
         addActivity(`${user.displayName} signed in.`, 'login');
-        ensureBotDmChannels(user.id);
     } else {
         const user = createUser({
             username,
@@ -429,8 +327,7 @@ async function handleLogin(event) {
             passcodeHash: passcode ? await hashPasscode(passcode) : null
         };
         setCurrentUser(user.id);
-        addActivity(`${user.displayName} joined the workspace.`, 'join');
-        ensureBotDmChannels(user.id);
+        addActivity(`${user.displayName} joined the app.`, 'join');
     }
 
     closeModal(elements.loginModal);
@@ -447,6 +344,7 @@ function getRoleForLogin(usernameKey, ownerCode, fallbackRole = 'member') {
 }
 
 function handleLogout() {
+    if (!confirm("Are you sure you want to sign out?")) return;
     state.session.currentUserId = null;
     saveState();
     refreshApp();
@@ -464,12 +362,6 @@ function createUser({ username, displayName, avatar, status, role }) {
         color: pickColor(),
         createdAt: new Date().toISOString()
     };
-}
-
-function ensureBotDmChannels(userId) {
-    BOT_USERS.forEach((bot) => {
-        getOrCreateDmChannel(userId, bot.id);
-    });
 }
 
 function getOrCreateDmChannel(userId, otherUserId) {
@@ -575,9 +467,6 @@ function handleSendMessage(event) {
     elements.messageInput.style.height = 'auto';
     state.drafts[channelId] = '';
     updateComposerState();
-    if (channel.type !== 'dm') {
-        maybeTriggerBotResponse(channelId, text);
-    }
 }
 
 function handleComposerKeydown(event) {
@@ -610,7 +499,6 @@ function createMessage(channelId, authorId, content) {
         content,
         createdAt: new Date().toISOString(),
         editedAt: null,
-        reactions: {},
         pinned: false,
         system: false
     };
@@ -620,7 +508,7 @@ function addMessage(channelId, message) {
     const atBottom = isNearBottom();
     state.messages[channelId].push(message);
     state.lastMessageAt[message.authorId] = message.createdAt;
-    addActivity(`${getUserName(message.authorId)} posted in #${getChannelLabel(channelId)}.`, 'message');
+    addActivity(`${getUserName(message.authorId)} sent a message in ${getChannelLabel(channelId)}`, 'message');
     saveState();
     renderMessages();
     renderPinned();
@@ -675,6 +563,8 @@ function renderMessage(message) {
     avatar.className = 'avatar';
     avatar.textContent = author?.avatar || getInitials(author?.displayName || '');
     avatar.style.background = author?.color || 'var(--accent)';
+    avatar.dataset.userId = message.authorId;
+    avatar.style.cursor = 'pointer';
 
     const content = document.createElement('div');
     content.className = 'message-content';
@@ -684,14 +574,13 @@ function renderMessage(message) {
     const name = document.createElement('span');
     name.className = 'message-author';
     name.textContent = author ? author.displayName : 'Unknown';
+    name.dataset.userId = message.authorId;
+    name.style.cursor = 'pointer';
 
     const badges = document.createElement('span');
     badges.className = 'message-badges';
     if (author?.role === 'owner') {
         badges.innerHTML += '<span class=\"badge owner\">Owner</span>';
-    }
-    if (author?.role === 'bot') {
-        badges.innerHTML += '<span class=\"badge bot\">Bot</span>';
     }
 
     const time = document.createElement('span');
@@ -715,7 +604,7 @@ function renderMessage(message) {
     const actions = document.createElement('div');
     actions.className = 'message-actions';
     const canEdit = message.authorId === state.session.currentUserId && !message.system;
-    const canDelete = isOwner() || message.authorId === state.session.currentUserId;
+    const canDelete = isOwner();
     const canPin = isOwner();
 
     if (canEdit) {
@@ -725,44 +614,13 @@ function renderMessage(message) {
         actions.appendChild(actionButton('Delete', 'delete'));
     }
     if (canPin) {
-        actions.appendChild(actionButton(message.pinned ? 'Unpin' : 'Pin', 'pin'));
+        actions.appendChild(actionButton(message.pinned ? 'Unpin' : 'pin'));
     }
-    if (!isOwner() && !message.system) {
-        actions.appendChild(actionButton('Report', 'report'));
-    }
-
-    const reactions = document.createElement('div');
-    reactions.className = 'message-reactions';
-    const existingReactions = message.reactions || {};
-    Object.entries(existingReactions).forEach(([emoji, users]) => {
-        if (!users.length) return;
-        const chip = document.createElement('button');
-        chip.type = 'button';
-        chip.className = `reaction-chip${users.includes(state.session.currentUserId) ? ' active' : ''}`;
-        chip.dataset.action = 'react';
-        chip.dataset.emoji = emoji;
-        chip.textContent = `${emoji} ${users.length}`;
-        reactions.appendChild(chip);
-    });
-
-    const reactionBar = document.createElement('div');
-    reactionBar.className = 'reaction-bar';
-    EMOJI_OPTIONS.slice(0, 4).forEach((emoji) => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'reaction-button';
-        button.dataset.action = 'react';
-        button.dataset.emoji = emoji;
-        button.textContent = emoji;
-        reactionBar.appendChild(button);
-    });
 
     content.appendChild(meta);
     content.appendChild(body);
     if (!message.system) {
         content.appendChild(actions);
-        content.appendChild(reactionBar);
-        content.appendChild(reactions);
     }
 
     wrapper.appendChild(avatar);
@@ -821,38 +679,24 @@ function handleMessageAction(event) {
         renderActivity();
         return;
     }
-
-    if (action === 'report') {
-        const reason = prompt('Report reason', 'Inappropriate content');
-        if (!reason) return;
-        const report = createReport(channelId, state.session.currentUserId, message, reason, message.content);
-        state.moderation.reports.unshift(report);
-        showToast('Report sent to moderation.');
-        saveState();
-        renderReports();
-        return;
-    }
-
-    if (action === 'react') {
-        const emoji = button.dataset.emoji;
-        toggleReaction(message, emoji);
-        saveState();
-        renderMessages();
-    }
 }
 
-function toggleReaction(message, emoji) {
-    if (!message.reactions[emoji]) {
-        message.reactions[emoji] = [];
+function handleUserClick(event) {
+    const el = event.target.closest('[data-user-id]');
+    if (!el) return;
+    const targetUserId = el.dataset.userId;
+    if (!targetUserId || targetUserId === state.session.currentUserId) return;
+    
+    const targetUser = state.users.byId[targetUserId];
+    if (!targetUser) return;
+    
+    if (targetUser.status !== 'online') {
+        showToast('You can only direct message online users.');
+        return;
     }
-    const list = message.reactions[emoji];
-    const userId = state.session.currentUserId;
-    const index = list.indexOf(userId);
-    if (index === -1) {
-        list.push(userId);
-    } else {
-        list.splice(index, 1);
-    }
+    
+    const dmChannelId = getOrCreateDmChannel(state.session.currentUserId, targetUserId);
+    setActiveChannel(dmChannelId);
 }
 
 function createReport(channelId, reporterId, message, reason, snapshot) {
@@ -880,7 +724,7 @@ function renderChannels() {
 
             const left = document.createElement('span');
             left.className = 'channel-meta';
-            left.innerHTML = `<span class=\"channel-icon\">#</span><span>${channel.name}</span>`;
+            left.innerHTML = `<span class=\"channel-icon\">💬</span><span>${channel.name}</span>`;
 
             const badge = document.createElement('span');
             badge.className = 'channel-pill';
@@ -902,7 +746,7 @@ function renderActiveChannel() {
     elements.channelDescription.textContent = isDm ? `Direct message with ${otherUser?.displayName || 'unknown user'}.` : channel.description;
     elements.messageInput.placeholder = isDm
         ? `Message ${otherUser?.displayName || 'direct message'}`
-        : `Message #${channel.name.toLowerCase()}`;
+        : `Message ${channel.name}`;
 }
 
 function renderDMs() {
@@ -945,6 +789,8 @@ function renderMembers() {
     members.forEach((user) => {
         const item = document.createElement('div');
         item.className = 'member-card';
+        item.dataset.userId = user.id;
+        item.style.cursor = 'pointer';
         item.innerHTML = `
             <span class=\"avatar mini\" style=\"background:${user.color}\">${user.avatar || getInitials(user.displayName)}</span>
             <div class=\"member-meta\">
@@ -1019,7 +865,7 @@ function renderReports() {
         card.innerHTML = `
             <div class=\"report-meta\">
                 <span>Reporter: ${reporter}</span>
-                <span>#${channel}</span>
+                <span>${channel}</span>
                 <span>${formatTime(report.createdAt)}</span>
             </div>
             <div class=\"report-reason\">${report.reason}</div>
@@ -1037,7 +883,7 @@ function renderModerationUsers() {
     elements.moderationUserList.innerHTML = '';
     state.users.allIds.forEach((userId) => {
         const user = state.users.byId[userId];
-        if (!user || user.role === 'bot') return;
+        if (!user) return;
         const muted = state.moderation.mutedUserIds.includes(userId);
         const banned = state.moderation.bannedUserIds.includes(userId);
         const card = document.createElement('div');
@@ -1103,34 +949,6 @@ function clearSearch() {
 
 function toggleDetailPanel() {
     document.body.classList.toggle('show-detail');
-}
-
-function toggleEmojiPicker() {
-    elements.emojiPicker.classList.toggle('active');
-}
-
-function handleEmojiClick(event) {
-    const button = event.target.closest('[data-emoji]');
-    if (!button) return;
-    const emoji = button.dataset.emoji;
-    insertEmoji(emoji);
-}
-
-function insertEmoji(emoji) {
-    const input = elements.messageInput;
-    const start = input.selectionStart;
-    const end = input.selectionEnd;
-    const text = input.value;
-    input.value = `${text.slice(0, start)}${emoji}${text.slice(end)}`;
-    input.selectionStart = input.selectionEnd = start + emoji.length;
-    input.focus();
-    handleTypingInput();
-}
-
-function handleGlobalClick(event) {
-    if (!elements.emojiPicker.contains(event.target) && !elements.emojiToggle.contains(event.target)) {
-        elements.emojiPicker.classList.remove('active');
-    }
 }
 
 function openSettings() {
@@ -1278,7 +1096,7 @@ function handleSlowModeChange() {
 function clearChannelHistory() {
     const channelId = uiState.activeChannelId;
     state.messages[channelId] = [];
-    addActivity(`Channel #${getChannelLabel(channelId)} was cleared.`, 'moderation');
+    addActivity(`Channel ${getChannelLabel(channelId)} was cleared.`, 'moderation');
     saveState();
     renderMessages();
     renderPinned();
@@ -1305,7 +1123,7 @@ function handleCreateChannel(event) {
     };
     state.channels.allIds.push(id);
     state.messages[id] = [];
-    addActivity(`Channel #${name} created.`, 'moderation');
+    addActivity(`Channel ${name} created.`, 'moderation');
     saveState();
     renderChannels();
     closeModal(elements.channelModal);
@@ -1337,29 +1155,6 @@ function updateTypingIndicator() {
     }
     const names = others.map((id) => getUserName(id)).join(', ');
     elements.typingIndicator.textContent = `${names} ${others.length === 1 ? 'is' : 'are'} typing...`;
-}
-
-function shouldBotRespond(channelId, text) {
-    return BOT_TRIGGER_CONFIG.channelIds.has(channelId) || BOT_TRIGGER_CONFIG.pattern.test(text);
-}
-
-function buildBotResponse(text) {
-    const snippet = text.slice(0, MAX_BOT_ECHO_MESSAGE_LENGTH);
-    return `Echoing: ${snippet}${text.length > MAX_BOT_ECHO_MESSAGE_LENGTH ? '...' : ''}`;
-}
-
-function maybeTriggerBotResponse(channelId, text) {
-    const triggerBot = shouldBotRespond(channelId, text);
-    if (!triggerBot) return;
-    const bot = state.users.byId['bot-echo'];
-    if (!bot) return;
-    setTyping(bot.id, true);
-    const response = buildBotResponse(text);
-    setTimeout(() => {
-        setTyping(bot.id, false);
-        const message = createMessage(channelId, bot.id, response);
-        addMessage(channelId, message);
-    }, BOT_RESPONSE_CONFIG.baseDelayMs + getRandomIndex(BOT_RESPONSE_CONFIG.jitterMs + 1));
 }
 
 function isSlowModeLocked() {

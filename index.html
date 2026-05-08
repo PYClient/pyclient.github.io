@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyClient Chat</title>
+    <link rel="stylesheet" href="./style.css">
+    <script>
+        (function() {
+            const stored = localStorage.getItem('pyclient.chat.state.v1');
+            if (!stored) return;
+            try {
+                const state = JSON.parse(stored);
+                if (state.settings?.theme) {
+                    document.documentElement.setAttribute('data-theme', state.settings.theme);
+                }
+                if (state.settings?.accent) {
+                    document.documentElement.style.setProperty('--accent', state.settings.accent);
+                }
+            } catch (error) {
+                console.error('Unable to load saved theme.', error);
+            }
+        })();
+    </script>
+    <script src="./main.js" defer></script>
+</head>
+<body>
+    <div class="app" id="app">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-badge">PC</div>
+                <div>
+                    <h1>PyClient Chat</h1>
+                    <p>Private workspace demo</p>
+                </div>
+            </div>
+
+            <div class="user-card" id="current-user-card">
+                <div class="avatar" id="current-user-avatar">?</div>
+                <div class="user-meta">
+                    <div class="user-name" id="current-user-name">Guest</div>
+                    <div class="user-status" id="current-user-status">Offline</div>
+                </div>
+                <button class="icon-button" id="logout-button" aria-label="Log out">⎋</button>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <span>Channels</span>
+                    <button class="icon-button owner-only" id="new-channel-button" aria-label="Create channel">＋</button>
+                </div>
+                <div class="channel-list" id="channel-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <span>Direct Messages</span>
+                </div>
+                <div class="dm-list" id="dm-list"></div>
+            </div>
+        </aside>
+
+        <main class="chat-panel">
+            <header class="chat-header">
+                <div class="channel-meta">
+                    <div class="channel-title">
+                        <span class="channel-badge">#</span>
+                        <h2 id="active-channel-name">General</h2>
+                    </div>
+                    <p id="active-channel-description"></p>
+                </div>
+                <div class="chat-actions">
+                    <button class="icon-button" id="search-toggle" aria-label="Search messages">🔍</button>
+                    <button class="icon-button" id="pinned-toggle" aria-label="Toggle pinned list">📌</button>
+                    <button class="icon-button owner-only" id="moderation-toggle" aria-label="Open moderation">🛡️</button>
+                    <button class="icon-button" id="settings-toggle" aria-label="Open settings">⚙️</button>
+                </div>
+            </header>
+
+            <div class="chat-search" id="chat-search">
+                <input type="search" id="message-search-input" placeholder="Search this channel">
+                <button class="ghost-button" id="clear-search" type="button">Clear</button>
+            </div>
+
+            <div class="message-list" id="message-list"></div>
+            <div class="typing-indicator" id="typing-indicator"></div>
+
+            <form class="composer" id="composer-form">
+                <div class="composer-tools">
+                    <button type="button" class="icon-button" id="emoji-toggle" aria-label="Emoji">😊</button>
+                    <button type="button" class="icon-button" id="attachment-toggle" aria-label="Attach">📎</button>
+                </div>
+                <div class="composer-input">
+                    <textarea id="message-input" rows="1" placeholder="Message #general"></textarea>
+                    <div class="emoji-picker" id="emoji-picker"></div>
+                </div>
+                <button type="submit" class="send-button" id="send-button">Send</button>
+            </form>
+            <div class="composer-footer" id="composer-footer"></div>
+        </main>
+
+        <aside class="detail-panel" id="detail-panel">
+            <div class="detail-section">
+                <div class="detail-header">
+                    <h3>Members</h3>
+                    <span class="detail-count" id="member-count"></span>
+                </div>
+                <div class="member-list" id="member-list"></div>
+            </div>
+            <div class="detail-section" id="pinned-section">
+                <div class="detail-header">
+                    <h3>Pinned</h3>
+                    <span class="detail-count" id="pinned-count"></span>
+                </div>
+                <div class="pinned-list" id="pinned-list"></div>
+            </div>
+            <div class="detail-section">
+                <div class="detail-header">
+                    <h3>Activity</h3>
+                </div>
+                <div class="activity-list" id="activity-list"></div>
+            </div>
+        </aside>
+    </div>
+
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div>
+                    <h2>Welcome to PyClient Chat</h2>
+                    <p class="modal-subtitle">Sign in or create your chat identity.</p>
+                </div>
+            </div>
+            <form class="modal-body" id="login-form">
+                <div class="form-grid">
+                    <label>
+                        Username
+                        <input id="login-username" required autocomplete="username" placeholder="pyclient">
+                    </label>
+                    <label>
+                        Display name
+                        <input id="login-display-name" placeholder="PYClient">
+                    </label>
+                    <label>
+                        Passcode (optional)
+                        <input id="login-passcode" type="password" autocomplete="current-password" placeholder="••••••">
+                    </label>
+                    <label>
+                        Owner access code (optional)
+                        <input id="login-owner-code" type="password" placeholder="owner access code">
+                    </label>
+                    <label>
+                        Status
+                        <select id="login-status">
+                            <option value="online">Online</option>
+                            <option value="away">Away</option>
+                            <option value="dnd">Do not disturb</option>
+                            <option value="invisible">Invisible</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="form-section">
+                    <p class="form-label">Choose an avatar</p>
+                    <div class="avatar-grid" id="login-avatar-grid"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="primary-button" type="submit">Enter chat</button>
+                </div>
+                <p class="helper-text" id="login-helper"></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="settings-modal" aria-hidden="true">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="icon-button" id="close-settings" aria-label="Close settings">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-section">
+                    <h3>Theme</h3>
+                    <label>
+                        Theme mode
+                        <select id="theme-select">
+                            <option value="dark">Dark</option>
+                            <option value="light">Light</option>
+                        </select>
+                    </label>
+                    <label>
+                        Accent color
+                        <input type="color" id="accent-picker" value="#5b8cff">
+                    </label>
+                    <label>
+                        Message density
+                        <select id="density-select">
+                            <option value="comfortable">Comfortable</option>
+                            <option value="compact">Compact</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="form-section">
+                    <h3>Profile</h3>
+                    <label>
+                        Display name
+                        <input id="profile-display-name" placeholder="Display name">
+                    </label>
+                    <label>
+                        Status
+                        <select id="profile-status">
+                            <option value="online">Online</option>
+                            <option value="away">Away</option>
+                            <option value="dnd">Do not disturb</option>
+                            <option value="invisible">Invisible</option>
+                        </select>
+                    </label>
+                    <div>
+                        <p class="form-label">Avatar</p>
+                        <div class="avatar-grid" id="profile-avatar-grid"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="ghost-button" id="cancel-settings" type="button">Cancel</button>
+                <button class="primary-button" id="save-settings" type="button">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="moderation-modal" aria-hidden="true">
+        <div class="modal wide">
+            <div class="modal-header">
+                <h2>Moderation Hub</h2>
+                <button class="icon-button" id="close-moderation" aria-label="Close moderation">✕</button>
+            </div>
+            <div class="modal-body moderation-body">
+                <section class="moderation-section">
+                    <h3>Reports</h3>
+                    <div id="report-list" class="report-list"></div>
+                </section>
+                <section class="moderation-section">
+                    <h3>User Controls</h3>
+                    <div id="moderation-user-list" class="moderation-user-list"></div>
+                </section>
+                <section class="moderation-section">
+                    <h3>Filters & Slow Mode</h3>
+                    <label>
+                        Blocked terms
+                        <div class="inline-row">
+                            <input id="blocked-term-input" placeholder="Add blocked term">
+                            <button class="ghost-button" id="add-blocked-term" type="button">Add</button>
+                        </div>
+                    </label>
+                    <div id="blocked-terms-list" class="blocked-terms-list"></div>
+                    <label>
+                        Slow mode (seconds)
+                        <input type="range" id="slow-mode-range" min="0" max="120" step="5">
+                        <span id="slow-mode-value"></span>
+                    </label>
+                    <button class="danger-button" id="clear-channel" type="button">Clear channel history</button>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="channel-modal" aria-hidden="true">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Create a channel</h2>
+                <button class="icon-button" id="close-channel-modal" aria-label="Close channel modal">✕</button>
+            </div>
+            <form class="modal-body" id="channel-form">
+                <label>
+                    Channel name
+                    <input id="channel-name" placeholder="design-feedback" required>
+                </label>
+                <label>
+                    Description
+                    <textarea id="channel-description" rows="2" placeholder="Share design feedback and ideas"></textarea>
+                </label>
+                <label class="checkbox-row">
+                    <input type="checkbox" id="channel-owner-only">
+                    Owner-only posting
+                </label>
+                <div class="modal-footer">
+                    <button class="ghost-button" id="cancel-channel" type="button">Cancel</button>
+                    <button class="primary-button" type="submit">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
+</body>
+</html>

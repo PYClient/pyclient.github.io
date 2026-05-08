@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PyClient Chat</title>
+    <title>Messaging App</title>
     <link rel="stylesheet" href="./style.css">
     <script>
         (function() {
-            const stored = localStorage.getItem('pyclient.chat.state.v1');
+            const stored = localStorage.getItem('messaging.app.state.v1');
             if (!stored) return;
             try {
                 const state = JSON.parse(stored);
@@ -28,10 +28,9 @@
     <div class="app" id="app">
         <aside class="sidebar">
             <div class="brand">
-                <div class="brand-badge">PC</div>
+                <div class="brand-badge">MA</div>
                 <div>
-                    <h1>PyClient Chat</h1>
-                    <p>Private workspace demo</p>
+                    <h1>Messaging App</h1>
                 </div>
             </div>
 
@@ -64,7 +63,7 @@
             <header class="chat-header">
                 <div class="channel-meta">
                     <div class="channel-title">
-                        <span class="channel-badge">#</span>
+                        <span class="channel-badge">💬</span>
                         <h2 id="active-channel-name">General</h2>
                     </div>
                     <p id="active-channel-description"></p>
@@ -87,12 +86,10 @@
 
             <form class="composer" id="composer-form">
                 <div class="composer-tools">
-                    <button type="button" class="icon-button" id="emoji-toggle" aria-label="Emoji">😊</button>
                     <button type="button" class="icon-button" id="attachment-toggle" aria-label="Attach">📎</button>
                 </div>
                 <div class="composer-input">
-                    <textarea id="message-input" rows="1" placeholder="Message #general"></textarea>
-                    <div class="emoji-picker" id="emoji-picker"></div>
+                    <textarea id="message-input" rows="1" placeholder="Message general"></textarea>
                 </div>
                 <button type="submit" class="send-button" id="send-button">Send</button>
             </form>
@@ -127,19 +124,19 @@
         <div class="modal">
             <div class="modal-header">
                 <div>
-                    <h2>Welcome to PyClient Chat</h2>
-                    <p class="modal-subtitle">Sign in or create your chat identity.</p>
+                    <h2>Welcome to Messaging App</h2>
+                    <p class="modal-subtitle">Sign in or create your identity.</p>
                 </div>
             </div>
             <form class="modal-body" id="login-form">
                 <div class="form-grid">
                     <label>
                         Username
-                        <input id="login-username" required autocomplete="username" placeholder="pyclient">
+                        <input id="login-username" required autocomplete="username" placeholder="admin">
                     </label>
                     <label>
                         Display name
-                        <input id="login-display-name" placeholder="PYClient">
+                        <input id="login-display-name" placeholder="Admin">
                     </label>
                     <label>
                         Passcode (optional)
@@ -164,7 +161,7 @@
                     <div class="avatar-grid" id="login-avatar-grid"></div>
                 </div>
                 <div class="modal-footer">
-                    <button class="primary-button" type="submit">Enter chat</button>
+                    <button class="primary-button" type="submit">Enter app</button>
                 </div>
                 <p class="helper-text" id="login-helper"></p>
             </form>

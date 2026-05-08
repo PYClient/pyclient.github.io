@@ -1,33 +1,30 @@
-# Streamable Video Gallery Showcase
+# PyClient Chat App
 
-Welcome to my official GitHub website. Currently, it is the home of my Streamable Video Gallery Showcase, a modern, feature-rich static website designed to demonstrate key front-end development techniques using pure HTML, CSS, and JavaScript. This project serves as a practical example of building a responsive, high-performance, and user-friendly web application that relies on no external frameworks.
+PyClient Chat is a feature-rich, single-page chat experience built with pure HTML, CSS, and JavaScript. It is designed to run on GitHub Pages while showcasing popular chat-app patterns like Discord and WhatsApp.
 
-## ✨ Key Features
+## ✨ Highlights
 
-This project was built from the ground up to include a variety of modern web features:
+- **Local account logins** with avatars, status, and display names
+- **Automatic chat saving** using localStorage
+- **Theme mode + accent color controls**
+- **Owner-only moderation hub** (mute/ban, reports, blocked terms, slow mode, channel creation)
+- **Typing indicators**, reactions, pinned messages, and message search
+- **Bot companions** for demo responses and live typing feedback
+- **Direct messages** with bots and channel-based chat rooms
 
-*   **Tabbed Interface**: Content is organized into clean, switchable tabs for a seamless user experience.
-*   **Dynamic Video Gallery**: The gallery is populated entirely on the client-side, making the content easily manageable within the code.
-*   **Live Search**: An instant search bar allows users to filter the extensive video collection by title in real-time.
-*   **Multiple View Modes**: Users can instantly switch the gallery layout between **compact**, **normal**, and **large** views using a minimal toggle control.
-*   **Back-to-Top Button**: A convenient arrow appears on scroll, allowing users to return to the top of the page with a single click.
-*   **Fully Responsive Design**: The layout fluidly adapts to all screen sizes, providing a consistent experience on mobile, tablet, and desktop devices.
+## 🚀 Run it locally
 
-## 🚀 Can I run it locally?
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/pyclient/pyclient.github.io.git
+   ```
+2. Open `index.html` in your browser.
 
-Yes, of course you can! To run this project on your local machine, follow these steps:
+## ⚙️ Configuration
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/pyclient/pyclient.github.io.git
-    ```
+- Update `OWNER_CONFIG` in `main.js` to set your owner username and access code.
+- All messages, profiles, and settings are stored locally in your browser via localStorage.
 
-2.  **Navigate to the directory:**
-    ```bash
-    cd pyclient.github.io
-    ```
+## 📝 Notes
 
-3.  **Open the site:**
-    Simply open the `index.html` file in your web browser of choice. No additional steps are required.
-
-    (You can also simply downlaod the zip file and open the index.html file that way, your choice :smile:)
+This is a front-end demo. Real-time multi-user messaging and production authentication will require a backend. Once you decide on the login system, the front-end is ready to integrate with it.
